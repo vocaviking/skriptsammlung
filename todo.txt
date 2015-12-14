@@ -1,5 +1,5 @@
-1. Install Django
-2. Install Pillow django-allauth django-haystack django-reversion pdfminer3k pillow simplejson django_nocaptcha_recaptcha django-bootstrap-form pytz django-contrib-comments
+﻿1. Install Django
+2. Install django-allauth django-haystack django-reversion pdfminer3k pillow simplejson django_nocaptcha_recaptcha django-bootstrap-form pytz django-contrib-comments
 ​3. Install search engine: whoosh?
 ​4. Install database
 5. Edit settings.py

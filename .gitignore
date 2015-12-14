@@ -1,1 +1,11 @@
 __pycache__
+db.sqlite3
+pafsite/whoosh_index/
+static/admin/
+static/anonymous.svg
+static/anonymous_user.svg
+static/bootstrap/
+static/series/_MG_1652.jpg
+static/series/_MG_3157.jpg
+static/series/_MG_3291.jpg
+uploads/

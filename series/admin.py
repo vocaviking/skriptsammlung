@@ -9,7 +9,7 @@ from django.contrib.auth.admin  import UserAdmin
 from django.contrib.auth        import get_user_model
 User = get_user_model()
 from .models                    import Upload, Meta, UserProfile
-import reversion
+from reversion.admin import VersionAdmin
 #====================================================================================
 #                                    Actual Code
 #====================================================================================
@@ -25,7 +25,7 @@ class UploadBaseAdmin(admin.ModelAdmin):
     ]
     list_display = ('date','uploader','author','meta','content_type','login_only')
     list_filter  = ['date', 'uploader', 'content_type', 'login_only']
-class UploadAdmin(reversion.VersionAdmin, UploadBaseAdmin):
+class UploadAdmin(VersionAdmin, UploadBaseAdmin):
     pass
 admin.site.register(Upload, UploadAdmin)
 
@@ -40,7 +40,7 @@ class MetaBaseAdmin(admin.ModelAdmin):
     ]
     list_display = ('name','lecture','lecturer','area','year','semester','programme')
     list_filter  = ['lecture','lecturer','area','year','semester','programme']
-class MetaAdmin(reversion.VersionAdmin, MetaBaseAdmin):
+class MetaAdmin(VersionAdmin, MetaBaseAdmin):
     pass
 admin.site.register(Meta, MetaAdmin)
 #------------------------------------------------------------------------------------

@@ -12,7 +12,8 @@ from django.conf                import settings
 from .validators                import validate_mimetype, validate_filesize
 from series.pdf2txt             import pdf2txt
 
-import reversion, datetime, os, re, mimetypes
+import datetime, os, re, mimetypes
+from reversion import revisions as reversion
 #====================================================================================
 #                                    Actual Code
 #====================================================================================
