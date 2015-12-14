@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block sidebar %}{% endblock %}
+{% block page %}
+	<div class="col-lg-12">
+		<div class="page-header">
+			<h1>About</h1>
+		</div>
+		<div class="row">
+			{% lorem 2 p %}
+		</div>
+		<div class="row">
+			<h3>Programming</h3>
+			{% lorem 2 p %}
+		</div>
+		<div class="row">
+			<h3>Licensing</h3>
+			{% lorem 2 p %}
+		</div>
+		<div class="row">
+			<h3>Disclaimer</h3>
+			{% lorem 2 p %}
+		</div>
+	</div>
+{% endblock %}

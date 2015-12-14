@@ -1,0 +1,6 @@
+{% extends "metas/edit_base.html" %}
+{% block title %}Edit: {{ meta.name }}{% endblock %}
+{% block editformurl %}{% url 'series:meta_edit' meta.id %}{% endblock %}
+{% block editbuttonname %}Save{% endblock %}
+{% block site_title %}{{ meta.name }} - Edit{% endblock %}
+{% block fileinfo %}{% endblock %}

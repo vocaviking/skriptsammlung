@@ -1,0 +1,15 @@
+1. Install Django
+2. Install Pillow django-allauth django-haystack django-reversion pdfminer3k pillow simplejson django_nocaptcha_recaptcha django-bootstrap-form pytz django-contrib-comments
+​3. Install search engine: whoosh?
+​4. Install database
+5. Edit settings.py
+​6. URL rewrite
+​7. Folder Protection
+​8. Management commands:
+​	syncdb
+​	collectstatic
+​	createinitialrevisions
+​	rebuild_index
+​	create_anonymous
+​	update_index
+​	syncdb

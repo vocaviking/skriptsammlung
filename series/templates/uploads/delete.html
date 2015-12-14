@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Delete &quot;{{ upload }}&quot;?{% endblock %}
+{% block site_title %}Delete - {{ upload }}{% endblock %}
+{% block sidebar %}{% endblock %}
+{% block content %}
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+		<form action="{% url 'series:upload_delete' upload.id %}" method="POST">
+			<p>The file will be deleted, a recovery is not possible.</p>
+			<p>If this is the last file of a series. The whole entry, with all its comments will be deleted too.</p>
+			<p>Are you sure you want to delete &quot;{{ upload }}&quot;?</p>
+			{% include 'webpage/generic_form_fields.html' %}
+			<button class="btn btn-danger" type="submit" value="delete">
+				<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+				Delete
+			</button>
+			<a href="{% url 'series:upload_detail' upload.id %}" class="btn btn-default" type="submit">
+				<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+				Cancel
+			</a>
+		</form>
+	</div>
+{% endblock %}

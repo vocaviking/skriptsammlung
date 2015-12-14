@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Please log in{% endblock %}
+{% block site_title %}Login{% endblock %}
+
+{% block alert %}
+	{% if form.errors %}
+	<div class="alert alert-danger" role="alert">
+		<p>Your username and/or password didn't match. Please try again.</p>
+	</div>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	<div class="col-lg-5 col-lg-offset-3 col-md-6 col-md-offset-2 col-sm-6 col-sm-offset-2 col-xs-12">
+		<form class="form-signin" method="post" action="{% url 'django.contrib.auth.views.login' %}">
+			{% include "webpage/generic_form_fields.html" %}
+			<button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
+			<input type="hidden" name="next" value="{{ next }}" />
+		</form>
+		<p>{% trans "Forgot your password?" %} <a href="{% url 'auth_password_reset' %}">{% trans "Reset it" %}</a>.</p>
+		<p>{% trans "Not a member?" %} <a href="{% url 'registration_register' %}">{% trans "Register" %}</a>.</p>
+	</div>
+{% endblock %}

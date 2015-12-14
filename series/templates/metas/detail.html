@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load bootstrap %}
+
+{% block site_title %}{{ meta }} - Detail{% endblock %}
+{% block title %}{{ meta }}{% endblock %}
+
+{% block alert %}
+	{% if not user.is_authenticated %}
+	<div class="alert alert-info" role="alert">
+		<p>Please <a href="{% url 'auth_login' %}?next={{request.path}}" class="alert-link">login</a> to download and edit files, or leave a comment.</p>
+	</div>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+		{% include 'metas/detail_labels.html' %}
+		<div class="row"><br/></div>
+		{% include 'metas/detail_bar.html' %}
+		<div class="row"><br/></div>
+		<div class="row">
+			<div class="panel-group">
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingZero">
+						<h2 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseZero" aria-expanded="true" aria-controls="collapseZero">
+							Uploads
+							</a>
+						</h2>
+					</div>
+					<div id="collapseZero" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingZero">
+						<div class="panel-body">
+							{% include 'metas/upload_detail.html' %}
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingOne">
+						<h2 class="panel-title">
+							<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+							Description
+							</a>
+						</h2>
+					</div>
+					<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+						<div class="panel-body">
+							<p>{{ meta.description }}</p>
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingTwo">
+						<h2 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+							Keywords
+							</a>
+						</h2>
+					</div>
+					<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+						<div class="panel-body">
+							<p>{{ meta.keywords }}</p>
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingThree">
+						<h2 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+							Lecture Information
+							</a>
+						</h2>
+					</div>
+					<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+						<div class="panel-body">
+							<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+								<h4>Lecture:</h4>
+								<p>{{ meta.lecture }}</p>
+							</div>
+							<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+								<h4>Speaker:</h4>
+								<p>{{ meta.lecturer }}</p>
+							</div>
+							<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+								<h4>Area:</h4>
+								<p>{{ meta.area }}</p>
+							</div>
+							<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+								<h4>Year:</h4>
+								<p>{{ meta.year }}</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingFour">
+						<h2 class="panel-title">
+							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+							Programme Information
+							</a>
+						</h2>
+					</div>
+					<div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+						<div class="panel-body">
+							<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+								<h4>Graduation Course:</h4>
+								<p>{{ meta.programme }}</p>
+							</div>
+							<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+								<h4>Semester:</h4>
+								<p>{{ meta.semester }}</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		{% include 'metas/discussion.html' %}
+		<div class="row"><br/></div>
+		{% include 'metas/detail_bar.html' %}
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				<div class="row">
+					<h2>Similar</h2>
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						{% for entry in more_like_this %}
+						{% include 'search/results/meta.html' with object=entry.object %}
+					{% endfor %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

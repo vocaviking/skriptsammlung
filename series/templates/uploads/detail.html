@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load bootstrap %}
+
+{% block site_title %}{{ upload }} - Detail{% endblock %}
+{% block title %}{{ upload }}{% endblock %}
+
+{% block content %}
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+	<div class="row">
+		<div class="row">
+			<div class="h4">
+				<span class="label label-primary label-spaced">{{ upload.date }}</span>
+				<span class="label label-primary label-spaced">{{ upload.author }}</span>
+				<span class="label label-primary label-spaced"><a href="{% url 'series:user_detail' upload.uploader %}">{{ upload.uploader }}</a></span>
+				<span class="label label-primary label-spaced">{{ upload.get_content_type_display }}</span>
+				<span class="label label-primary label-spaced">SIZE</span>
+				<span class="label label-primary label-spaced">Type</span>
+				<span class="label label-default label-spaced">{{ upload.downloads }} Downloads</span>
+				<span class="label label-default label-spaced">LOGIN ONLY/PUBLIC</span>
+			</div>
+		</div>
+		<div class="row"><br/></div>
+		<div class="row">
+			<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+				<h4>Series:</h4>
+				<p><a href="{% url 'series:meta_detail' upload.meta.pk %}">{{ upload.meta }}</a></p>
+			</div>
+			<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+				<h4>Author:</h4>
+				<p>{{ upload.author }}</p>
+			</div>
+			<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+				<h4>Uploader:</h4>
+				<p>{{ upload.uploader }}</p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+				<a class="btn btn-danger {% if not user.is_authenticated %}disabled{% endif %}" role="button" href="{% url 'series:upload_delete' upload.id %}">
+					<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+					Delete
+				</a>
+				<a class="btn btn-success {% if not user.is_authenticated %}disabled{% endif %}" role="button" href="{% url 'series:upload_file' upload.id %}">
+					<span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+					Download
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

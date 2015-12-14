@@ -1,0 +1,9 @@
+{{ object.file }}
+{{ object.author }}
+{{ object.content_type }}
+{{ object.content }}
+
+
+
+
+

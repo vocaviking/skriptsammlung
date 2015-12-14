@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+	{% for semester, programme_index in grid.items %}
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="heading{{ semester }}">
+				<h2 class="panel-title">
+					<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ semester }}" aria-expanded="true" aria-controls="collapse{{ semester }}">
+					{{ semester }}. Semester
+					</a>
+				</h2>
+			</div>
+			<div id="collapse{{ semester }}" class="panel-collapse collapse in" role="tab" aria-labelledby="heading{{ semester }}">
+				<div class="panel-body">
+				{% for programme, lecture_index in programme_index.items %}
+					<h4>{{ programme }}</h4>
+					<p>
+					<ul>
+					{% for lecture in lecture_index %}
+						<li>{{ lecture }}</li>
+					{% endfor %}
+					</ul>
+					</p>
+				{% endfor %}
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+{% endblock %}
+
+

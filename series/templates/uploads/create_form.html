@@ -1,0 +1,27 @@
+{% load bootstrap %}
+<div class="panel panel-default">
+	<div class="panel-heading" role="tab" id="headingfileinfo">
+		<h2 class="panel-title">
+			<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapsefileinfo" aria-expanded="true" aria-controls="collapsefileinfo">
+			File Information
+			</a>
+		</h2>
+	</div>
+	<div id="collapsefileinfo" class="panel-collapse collapse in" role="tab" aria-labelledby="headingfileinfo">
+		<div class="panel-body">
+			<div class="row">
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+					{{ form.file|bootstrap }}
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+					{{ form.author|bootstrap }}
+				</div>
+				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+					{{ form.content_type|bootstrap }}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

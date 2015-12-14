@@ -1,0 +1,7 @@
+{{ object.name }}
+{{ object.description }}
+{{ object.keywords }}
+{{ object.lecture }}
+{{ object.lecturer }}
+{{ object.programme }}
+{{ object.area }}

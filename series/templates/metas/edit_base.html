@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% load bootstrap %}
+
+{% block alert %}
+	{% if form.errors %}
+	<div class="alert alert-danger" role="alert">
+		<p>Error while submitting the form. Please check, and try again.</p>
+	</div>
+	{% endif %}
+{% endblock %}
+
+{% block javascript %}
+	{{ block.super }}
+	{% include "search/autocomplete_function.html" with autourl='series:autocomplete' autocategory='people'    autoid='#id_author' %}
+	
+	{% include "search/autocomplete_function.html" with autourl='series:autocomplete' autocategory='lecture'   autoid='#id_lecture' %}
+	{% include "search/autocomplete_function.html" with autourl='series:autocomplete' autocategory='people'    autoid='#id_lecturer' %}
+	{% include "search/autocomplete_function.html" with autourl='series:autocomplete' autocategory='keywords'  autoid='#id_keywords' %}
+	{% include "search/autocomplete_function.html" with autourl='series:autocomplete' autocategory='area'      autoid='#id_area' %}
+	{% include "search/autocomplete_function.html" with autourl='series:autocomplete' autocategory='programme' autoid='#id_programme' %}
+	{% include "search/autocomplete_function.html" with autourl='series:autocomplete' autocategory='metaname'  autoid='#id_name' %}
+{% endblock %}
+
+{% block content %}
+	<div class="col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-sm-12 col-xs-12">
+		<form action="{% block editformurl %}{% endblock %}" method="POST" enctype="multipart/form-data">
+			{% csrf_token %}
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingname">
+					<h2 class="panel-title">
+						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapsename" aria-expanded="true" aria-controls="collapsename">
+						Name
+						</a>
+					</h2>
+				</div>
+				<div id="collapsename" class="panel-collapse collapse in" role="tab" aria-labelledby="headingname">
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								{{ form.name|bootstrap }}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% block fileinfo %}
+				{% include 'uploads/create_form.html' %}
+			{% endblock %}
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingdescription">
+					<h2 class="panel-title">
+						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapsedescription" aria-expanded="true" aria-controls="collapsedescription">
+						Description
+						</a>
+					</h2>
+				</div>
+				<div id="collapsedescription" class="panel-collapse collapse in" role="tab" aria-labelledby="headingdescription">
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								{{ form.description|bootstrap }}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingkeywords">
+					<h2 class="panel-title">
+						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapsekeywords" aria-expanded="true" aria-controls="collapsekeywords">
+						Keywords
+						</a>
+					</h2>
+				</div>
+				<div id="collapsekeywords" class="panel-collapse collapse in" role="tab" aria-labelledby="headingkeywords">
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								{{ form.keywords|bootstrap }}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headinglectureinfo">
+					<h2 class="panel-title">
+						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapselecture" aria-expanded="true" aria-controls="collapselecture">
+						Lecture Information
+						</a>
+					</h2>
+				</div>
+				<div id="collapselecture" class="panel-collapse collapse in" role="tab" aria-labelledby="headinglectureinfo">
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+								{{ form.lecture|bootstrap }}
+							</div>
+							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+								{{ form.lecturer|bootstrap }}
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+								{{ form.year|bootstrap }}
+							</div>
+							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+								{{ form.area|bootstrap }}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingprogrammeinfo">
+					<h2 class="panel-title">
+						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseprogrammeinfo" aria-expanded="true" aria-controls="collapseprogrammeinfo">
+						Programme Information
+						</a>
+					</h2>
+				</div>
+				<div id="collapseprogrammeinfo" class="panel-collapse collapse in" role="tab" aria-labelledby="headingprogrammeinfo">
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+								{{ form.programme|bootstrap }}
+							</div>
+							<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+								{{ form.semester|bootstrap }}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+					{{ form.captcha|bootstrap }}
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+					<button type="submit" class="btn btn-primary">
+						<span class="glyphicon glyphicon-open" aria-hidden="true"></span>
+						{% block editbuttonname %}{% endblock %}
+					</button>
+				</div>
+			</div>
+		</form>
+	</div>
+{% endblock %}

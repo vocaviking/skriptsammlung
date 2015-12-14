@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load bootstrap %}
+{% load i18n %}
+
+{% block title %}{% endblock %}
+{% block site_title %}Register{% endblock %}
+
+{% block content %}
+	<div class="col-lg-5 col-lg-offset-3 col-md-6 col-md-offset-2 col-sm-6 col-sm-offset-2 col-xs-12">
+		<form action="{% url 'registration_register' %}" method="POST">
+			<h2 class="form-signin-heading">Enroll Now!</h2>
+			{% include "webpage/generic_form_fields.html" %}
+			<button class="btn btn-lg btn-primary btn-block" type="submit" value="register">Register</button>
+		</form>
+	</div>
+{% endblock %}
