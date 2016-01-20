@@ -15,11 +15,14 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-
+from django.conf import settings
 urlpatterns = [
     url(r'^admin/',    include(admin.site.urls)),
     url(r'^',          include('series.urls', namespace='series')),
-    url(r'^search/',   include('haystack.urls')),
     url(r'^comments/', include('django_comments.urls')),
     url(r'^users/',    include('registration.backends.default.urls')),
 ]
+
+#Server Files in the test environment
+if settings.DEBUG:
+    urlpatterns.append(url(r'^uploads/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}))

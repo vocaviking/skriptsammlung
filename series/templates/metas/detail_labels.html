@@ -1,19 +1,16 @@
+{% load comments %}
 <div class="row">
-	<div class="h4">
-		<span class="label label-primary label-spaced">{{ meta.area }}</span>
-		<span class="label label-primary label-spaced">{{ meta.get_semester_display }}</span>
-		<span class="label label-primary label-spaced">{{ meta.year }}</span>
-		<span class="label label-primary label-spaced">{{ meta.programme }}</span>
-		<span class="label label-primary label-spaced">{{ meta.lecturer }}</span>
-		<span class="label label-primary label-spaced">{{ meta.lecture }}</span>
-		
-		<span class="label label-default label-spaced">{{ meta.upload_set.count }} Upload</span>
-		<span class="label label-default label-spaced">{{ upload_latest.date|date:"SHORT_DATETIME_FORMAT" }}</span>
-		{% for author in upload_authors %}
-			<span class="label label-default label-spaced">{{ author }}</span>
-		{% endfor %}
-		{% for uploader in upload_uploader %}
-			<span class="label label-default label-spaced"><a href="{% url 'series:user_detail' uploader %}">{{ uploader }}</a></span>
-		{% endfor %}
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+		<div class="h4">
+			<a href="{% url 'series:search' %}?q={{ meta.lecture|urlencode }}"><span class="label label-primary label-spaced"><span class="glyphicon glyphicon-blackboard" aria-hidden="true"></span> {{ meta.lecture }}</span></a>
+			<a href="{% url 'series:search' %}?q={{ meta.lecturer|urlencode }}"><span class="label label-primary label-spaced"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{ meta.lecturer }}</span></a>
+			<a href="{% url 'series:search' %}?q={{ meta.year|urlencode }}"><span class="label label-primary label-spaced"><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{ meta.year }}</span></a>
+			<a href="{% url 'series:search' %}?q={{ meta.area|urlencode }}"><span class="label label-success label-spaced"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> {{ meta.area }}</span></a>
+			<a href="{% url 'series:search' %}?q={{ meta.programme|urlencode }}"><span class="label label-primary label-spaced"><span class="glyphicon glyphicon-road" aria-hidden="true"></span> {{ meta.programme }}</span></a>
+			<a href="{% url 'series:search' %}?q={{ meta.get_semester_display|urlencode }}"><span class="label label-primary label-spaced"><span class="glyphicon glyphicon-road" aria-hidden="true"></span> {{ meta.get_semester_display }}</span></a>
+			<span class="label label-default label-spaced"><span class="glyphicon glyphicon-open" aria-hidden="true"></span> {{ meta.upload_set.count }} Uploads</span>
+			{% get_comment_count for series.meta meta.id as comment_count %}
+			<span class="label label-default label-spaced"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span> {{ comment_count }} Comments</span>
+		</div>
 	</div>
 </div>

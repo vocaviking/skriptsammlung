@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 
+{% block site_title %}Lectures{% endblock %}
+{% block title %}Lectures{% endblock %}
+
 {% block content %}
 	{% for semester, programme_index in grid.items %}
 		<div class="panel panel-default">
 			<div class="panel-heading" role="tab" id="heading{{ semester }}">
 				<h2 class="panel-title">
-					<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ semester }}" aria-expanded="true" aria-controls="collapse{{ semester }}">
+					<a class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ semester }}" aria-expanded="true" aria-controls="collapse{{ semester }}">
 					{{ semester }}. Semester
 					</a>
 				</h2>
@@ -17,7 +20,7 @@
 					<p>
 					<ul>
 					{% for lecture in lecture_index %}
-						<li>{{ lecture }}</li>
+						<li><a href="{% url 'series:search' %}?q={{ semester|urlencode|add:'. Semester'|add:' '|add:programme|add:' '|add:lecture|urlencode }}#results">{{ lecture }}</a></li>
 					{% endfor %}
 					</ul>
 					</p>

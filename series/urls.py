@@ -2,11 +2,15 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
+    #Search Test
+    url(r'^search/$',                                       views.search_view.as_view(),   name='search'),
     #General Site
     url(r'^$',                                              views.index,                   name='index'),
     url(r'^about/$',                                        views.about,                   name='about'),
     url(r'^contact/$',                                      views.contact,                 name='contact'),
+    #Indexes/Overviews
     url(r'^lectures/$',                                     views.semester_overview,       name='semester_overview'),
+    url(r'^speakers/$',                                     views.people_overview,         name='people_overview'),
     #Autocomplete                                                                          
     url(r'^autocomplete/$',                                 views.autocomplete,            name='autocomplete'),
     #Series                                                                                
@@ -22,5 +26,5 @@ urlpatterns = [
     #User                                                                                  
     url(r'^users/profile/(?P<username>[0-9a-zA-Z._\-]+)/$', views.user_detail.as_view(),   name='user_detail'),
     url(r'^users/profile/edit$',                            views.user_edit.as_view(),     name='user_edit'),
-    url(r'^users/register',                                 views.user_register.as_view(), name='registration_register'),
+    url(r'^users/register/$',                               views.user_register.as_view(), name='registration_register'),
 ]

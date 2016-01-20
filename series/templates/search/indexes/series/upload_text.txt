@@ -1,9 +1,22 @@
 {{ object.file }}
 {{ object.author }}
-{{ object.content_type }}
+{{ object.get_content_type_display }}
 {{ object.content }}
+{{ object.uploader.get_username }}
 
-
-
+{{ object.meta.name }}
+{{ object.meta.description }}
+{{ object.meta.keywords }}
+{{ object.meta.lecture }}
+{{ object.meta.lecturer }}
+{{ object.meta.programme }}
+{{ object.meta.area }}
+{{ object.meta.get_semester_display }}
+{{ object.meta.year }}
+{% if object.login_only %}
+	Restricted
+{% else %}
+	Public
+{% endif %}
 
 

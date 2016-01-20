@@ -1,26 +1,28 @@
 {% load comments %}
 {% load bootstrap %}
 <div class="row">
-		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			<div class="row">
-				<h2>Discussion</h2>
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-					{% get_comment_count for series.meta meta.id as comment_count %}
-					<p>{{ comment_count }} Comments</p>
-					{% get_comment_list for series.meta meta.id as comment_list %}
-					{% for comment in comment_list %}
-						{% include 'metas/discussion_comment.html' %}
-					{% endfor %}
-				</div>
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+		<div class="page-header">
+			<h2 id="discussion">Discussion</h2>
+		</div>
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+				{% get_comment_count for series.meta meta.id as comment_count %}
+				<p>{{ comment_count }} Comments</p>
+				{% get_comment_list for series.meta meta.id as comment_list %}
+				{% for comment in comment_list %}
+					{% include 'metas/discussion_comment.html' %}
+				{% endfor %}
 			</div>
-			<div class="row">
+		</div>
+		<div class="row hidden-lg hidden-md hidden-sm"><br/></div>
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 				{% if user.is_authenticated %}
 					{% get_comment_form for meta as form %}
 					<form action="{% comment_form_target %}" method="POST">
 						{% csrf_token %}
-						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-							{{ form.comment|bootstrap }}
-						</div>
+						{{ form.comment|bootstrap }}
 						{{ form.honeypot }}
 						{{ form.content_type }}
 						{{ form.object_pk }}
@@ -29,10 +31,18 @@
 						<input type="hidden" name="next" value="{% url 'series:meta_detail' meta.id %}" />
 						<div class="row">
 							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-								<button type="submit" class="btn btn-primary pull-right" value="Post">
-									<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-									Submit Comment
-								</button>
+								<div class="hidden-lg hidden-md hidden-sm">
+									<button type="submit" class="btn btn-block btn-primary" value="Post">
+										<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+										Submit Comment
+									</button>
+								</div>
+								<div class="hidden-xs">
+									<button type="submit" class="btn btn-primary pull-right" value="Post">
+										<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+										Submit Comment
+									</button>
+								</div>
 							</div>
 						</div>
 					</form>
@@ -42,3 +52,4 @@
 			</div>
 		</div>
 	</div>
+</div>

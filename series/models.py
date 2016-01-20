@@ -4,16 +4,15 @@
 #====================================================================================
 #                                  Include stuff
 #====================================================================================
+import datetime, os, re, mimetypes
+from django.conf                import settings
 from django.contrib.auth.models import User
 from django.db                  import models
 from django.templatetags.static import static
 from django.utils               import timezone
-from django.conf                import settings
-from .validators                import validate_mimetype, validate_filesize
+from reversion                  import revisions as reversion
 from series.pdf2txt             import pdf2txt
-
-import datetime, os, re, mimetypes
-from reversion import revisions as reversion
+from .validators                import validate_mimetype, validate_filesize
 #====================================================================================
 #                                    Actual Code
 #====================================================================================
@@ -39,10 +38,6 @@ class Upload(models.Model):
                                      verbose_name = 'Uploader',
                                      null = True,
                                     )
-    #Ip-Adress
-    ip           = models.GenericIPAddressField(default      = '0.0.0.0',
-                                                verbose_name = 'IP-address of the Uploader',
-                                                )
     #Show only for logged in users?
     login_only   = models.BooleanField(default      = True,
                                        verbose_name = 'Login required',
@@ -82,8 +77,7 @@ class Upload(models.Model):
                                     verbose_name = 'Content Type of the Upload',
                                     )
     #Downloads
-    downloads       = models.PositiveIntegerField(default = 0)
-    
+    downloads       = models.PositiveIntegerField(default = 0,editable    = False)
     #Content Extract
     content         = models.TextField(default = '',editable    = False)
     #More Meta-Information is saved and connected with the Meta Model
@@ -92,10 +86,13 @@ class Upload(models.Model):
         mime = mimetypes.guess_type(self.file.name)[0]
         #Extract Data
         if   mime == 'application/pdf':
-            content = pdf2txt(self.file.file).read()
+            try:
+                content = pdf2txt(self.file.file).read()
+            except:
+                content = ''
         elif mime == 'text/plain' or mime == 'application/x-tex':
             self.file.open()
-            content = self.read().decode('utf-8')
+            content = self.file.read().decode('utf-8')
         else:
             #Don't know how to extract!!
             return
@@ -104,13 +101,24 @@ class Upload(models.Model):
         content = re.sub('[\s]+',' ',content)
         #Save Extract
         self.content = content
-    def save(self, *args, **kwargs):
-        self.file_content_extract()
-        super(Upload, self).save(*args, **kwargs)
+#    def save(self, *args, **kwargs):
+#        self.file_content_extract()
+#        super(Upload, self).save(*args, **kwargs)
     def __str__(self):
         return str(os.path.split(self.file.file.name)[1])
     def get_filetype(self):
-        return os.path.splitext(self.file.path)[1][1:].lower()
+        return os.path.splitext(self.file.path)[1][1:].upper()
+    def get_filesize(self):
+        suffixes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+        back = '0 B'
+        nbytes = self.file.size*1.
+        if nbytes > 0.:
+            i = 0
+            while nbytes >= 1024. and i < len(suffixes)-1:
+                nbytes /= 1024.
+                i += 1
+            back = '{size:.2f} {suffix}'.format(size = nbytes, suffix = suffixes[i])
+        return back
 #------------------------------------------------------------------------------------
 #                                    Meta Data
 #------------------------------------------------------------------------------------
@@ -194,12 +202,19 @@ class UserProfile(models.Model):
                                       primary_key = True,
                                       editable    = False,
                                       )
-    #Title (like Dr., Prof., ...)
+    #Title (like Dr., Prof., Sir, ...)
     title         = models.CharField(verbose_name = 'Title',
                                      help_text    = 'e.g. Dr., Prof., Sir',
                                      default      = '',
                                      blank        = True,
-                                     max_length   = 20,
+                                     max_length   = 50,
+                                    )
+    #Degree (like PhD, B.Sc., M.Sc., ...)
+    degree        = models.CharField(verbose_name = 'Degree',
+                                     help_text    = 'e.g. PhD, B.Sc., M.Sc.',
+                                     default      = '',
+                                     blank        = True,
+                                     max_length   = 50,
                                     )
     #Description
     about_me      = models.TextField(verbose_name = 'About Me',
@@ -222,20 +237,15 @@ class UserProfile(models.Model):
     phone         = models.CharField(verbose_name = 'Phone Number',
                                      default      = '',
                                      blank        = True,
-                                     max_length   = 20,
+                                     max_length   = 50,
                                     )
     #Birthdate
     birth_date    = models.DateField(verbose_name = 'Birthdate',
                                      help_text    = 'Your Birthdate will only be shown to other Users with your permission.',
-                                     default      = timezone.now,
+                                     default      = datetime.datetime(1,1,1),
                                      blank        = False,
                                     )
     #Permissions
-    show_email    = models.BooleanField(verbose_name = 'Show Mail Adress',
-                                        help_text    = 'Show other Users your Mail Address.',
-                                        default      = False,
-                                        blank        = False,
-                                        )
     show_age      = models.BooleanField(verbose_name = 'Show Age',
                                         help_text    = 'Show other Users how old you are.',
                                         default      = False,
@@ -251,11 +261,6 @@ class UserProfile(models.Model):
                                         default      = False,
                                         blank        = False,
                                         )
-    #Last Usage IP
-    last_ip       = models.GenericIPAddressField(verbose_name = 'Last known IP-address of the User',
-                                                 default      = '0.0.0.0',
-                                                 editable     = False,
-                                                 )
     def get_age(self):
         today = datetime.date.today()
         try: 
@@ -266,13 +271,24 @@ class UserProfile(models.Model):
             return today.year - self.birth_date.year - 1
         else:
             return today.year - self.birth_date.year
+    def get_birth_date(self):
+        if self.show_age and self.show_birthday:
+            birth_date = self.birth_date
+        elif self.show_birthday:
+            birth_date = datetime.datetime(1,self.birth_date.month,self.birth_date.day)
+        elif self.show_age:
+            birth_date = datetime.datetime(self.birth_date.year,1,1)
+        else:
+            birth_date = datetime.datetime(1,1,1)
+        return birth_date
     def get_image_url(self):
-        img_url = static('series/deleted_user.png')
         if self.user.is_active:
             if self.image and hasattr(self.image, 'url'):
                 img_url = self.image.url
             else:
                 img_url = static('series/anonymous_user.png')
+        else:
+            img_url = static('series/deleted_user.png')
         return img_url
     def __str__(self):
         return self.user.get_username()

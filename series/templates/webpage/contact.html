@@ -1,12 +1,8 @@
 {% extends "base.html" %}
-{% block sidebar %}{% endblock %}
-{% block page %}
-	<div class="col-lg-12">
-		<div class="page-header">
-			<h1>Contact</h1>
-		</div>
-		<div class="row">
-			{% lorem 4 p %}
-		</div>
-	</div>
+
+{% block site_title %}Contact{% endblock %}
+{% block title %}Contact{% endblock %}
+
+{% block content %}
+	{% lorem 4 p %}
 {% endblock %}

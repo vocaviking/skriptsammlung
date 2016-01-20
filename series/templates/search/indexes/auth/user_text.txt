@@ -1,2 +1,0 @@
-{{ object.get_username }}
-{{ object.get_full_name }}

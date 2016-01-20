@@ -4,7 +4,10 @@
 {% block alert %}
 	{% if form.errors %}
 	<div class="alert alert-danger" role="alert">
-		<p>Error while submitting the form. Please check, and try again.</p>
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		<p>Error while submitting the form. Please check your input, and try again.</p>
 	</div>
 	{% endif %}
 {% endblock %}
@@ -12,7 +15,6 @@
 {% block javascript %}
 	{{ block.super }}
 	{% include "search/autocomplete_function.html" with autourl='series:autocomplete' autocategory='people'    autoid='#id_author' %}
-	
 	{% include "search/autocomplete_function.html" with autourl='series:autocomplete' autocategory='lecture'   autoid='#id_lecture' %}
 	{% include "search/autocomplete_function.html" with autourl='series:autocomplete' autocategory='people'    autoid='#id_lecturer' %}
 	{% include "search/autocomplete_function.html" with autourl='series:autocomplete' autocategory='keywords'  autoid='#id_keywords' %}
@@ -22,129 +24,141 @@
 {% endblock %}
 
 {% block content %}
-	<div class="col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-sm-12 col-xs-12">
-		<form action="{% block editformurl %}{% endblock %}" method="POST" enctype="multipart/form-data">
-			{% csrf_token %}
-			<div class="panel panel-default">
-				<div class="panel-heading" role="tab" id="headingname">
-					<h2 class="panel-title">
-						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapsename" aria-expanded="true" aria-controls="collapsename">
-						Name
-						</a>
-					</h2>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<form action="{% block editformurl %}{% endblock %}" method="POST" enctype="multipart/form-data">
+				{% csrf_token %}
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingName">
+						<h2 class="panel-title">
+							<a class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseName" aria-expanded="true" aria-controls="collapseName">
+							Name
+							</a>
+						</h2>
+					</div>
+					<div id="collapseName" class="panel-collapse collapse in" role="tab" aria-labelledby="headingName">
+						<div class="panel-body">
+							{{ form.name|bootstrap }}
+						</div>
+					</div>
 				</div>
-				<div id="collapsename" class="panel-collapse collapse in" role="tab" aria-labelledby="headingname">
-					<div class="panel-body">
-						<div class="row">
-							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-								{{ form.name|bootstrap }}
+				{% block fileinfo %}
+					{% include 'uploads/create_form.html' %}
+				{% endblock %}
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingDescription">
+						<h2 class="panel-title">
+							<a class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseDescription" aria-expanded="true" aria-controls="collapseDescription">
+							Description
+							</a>
+						</h2>
+					</div>
+					<div id="collapseDescription" class="panel-collapse collapse in" role="tab" aria-labelledby="headingDescription">
+						<div class="panel-body">
+							<div class="row">
+								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+									{{ form.description|bootstrap }}
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			{% block fileinfo %}
-				{% include 'uploads/create_form.html' %}
-			{% endblock %}
-			<div class="panel panel-default">
-				<div class="panel-heading" role="tab" id="headingdescription">
-					<h2 class="panel-title">
-						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapsedescription" aria-expanded="true" aria-controls="collapsedescription">
-						Description
-						</a>
-					</h2>
-				</div>
-				<div id="collapsedescription" class="panel-collapse collapse in" role="tab" aria-labelledby="headingdescription">
-					<div class="panel-body">
-						<div class="row">
-							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-								{{ form.description|bootstrap }}
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingKeywords">
+						<h2 class="panel-title">
+							<a class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseKeywords" aria-expanded="true" aria-controls="collapseKeywords">
+							Keywords
+							</a>
+						</h2>
+					</div>
+					<div id="collapseKeywords" class="panel-collapse collapse in" role="tab" aria-labelledby="headingKeywords">
+						<div class="panel-body">
+							<div class="row">
+								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+									{{ form.keywords|bootstrap }}
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="panel panel-default">
-				<div class="panel-heading" role="tab" id="headingkeywords">
-					<h2 class="panel-title">
-						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapsekeywords" aria-expanded="true" aria-controls="collapsekeywords">
-						Keywords
-						</a>
-					</h2>
-				</div>
-				<div id="collapsekeywords" class="panel-collapse collapse in" role="tab" aria-labelledby="headingkeywords">
-					<div class="panel-body">
-						<div class="row">
-							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-								{{ form.keywords|bootstrap }}
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingLectureInfo">
+						<h2 class="panel-title">
+							<a class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseLectureInfo" aria-expanded="true" aria-controls="collapseLectureInfo">
+							Lecture Information
+							</a>
+						</h2>
+					</div>
+					<div id="collapseLectureInfo" class="panel-collapse collapse in" role="tab" aria-labelledby="headingLectureInfo">
+						<div class="panel-body">
+							<div class="row">
+								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+									{{ form.lecture|bootstrap }}
+								</div>
+								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+									{{ form.lecturer|bootstrap }}
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+									{{ form.year|bootstrap }}
+								</div>
+								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+									{{ form.area|bootstrap }}
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="panel panel-default">
-				<div class="panel-heading" role="tab" id="headinglectureinfo">
-					<h2 class="panel-title">
-						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapselecture" aria-expanded="true" aria-controls="collapselecture">
-						Lecture Information
-						</a>
-					</h2>
-				</div>
-				<div id="collapselecture" class="panel-collapse collapse in" role="tab" aria-labelledby="headinglectureinfo">
-					<div class="panel-body">
-						<div class="row">
-							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-								{{ form.lecture|bootstrap }}
-							</div>
-							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-								{{ form.lecturer|bootstrap }}
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-								{{ form.year|bootstrap }}
-							</div>
-							<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-								{{ form.area|bootstrap }}
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingProgrammeInfo">
+						<h2 class="panel-title">
+							<a class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseProgrammeInfo" aria-expanded="true" aria-controls="collapseProgrammeInfo">
+							Programme Information
+							</a>
+						</h2>
+					</div>
+					<div id="collapseProgrammeInfo" class="panel-collapse collapse in" role="tab" aria-labelledby="headingProgrammeInfo">
+						<div class="panel-body">
+							<div class="row">
+								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+									{{ form.programme|bootstrap }}
+								</div>
+								<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+									{{ form.semester|bootstrap }}
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="panel panel-default">
-				<div class="panel-heading" role="tab" id="headingprogrammeinfo">
-					<h2 class="panel-title">
-						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseprogrammeinfo" aria-expanded="true" aria-controls="collapseprogrammeinfo">
-						Programme Information
-						</a>
-					</h2>
+				<div class="row">
+					<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+						{{ form.captcha|bootstrap }}
+					</div>
 				</div>
-				<div id="collapseprogrammeinfo" class="panel-collapse collapse in" role="tab" aria-labelledby="headingprogrammeinfo">
-					<div class="panel-body">
-						<div class="row">
-							<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-								{{ form.programme|bootstrap }}
-							</div>
-							<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-								{{ form.semester|bootstrap }}
-							</div>
+				{% block editbutton %}
+				<div class="hidden-lg hidden-md hidden-sm">
+					<div class="row">
+						<div class="col-xs-12">
+							<button type="submit" class="btn btn-primary btn-block">
+								<span class="glyphicon glyphicon-open" aria-hidden="true"></span>
+								{{ editbuttonname }}
+							</button>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="row">
-				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-					{{ form.captcha|bootstrap }}
+				<div class="hidden-xs">
+					<div class="row">
+						<div class="col-lg-12 col-md-12 col-sm-12">
+							<button type="submit" class="btn btn-primary">
+								<span class="glyphicon glyphicon-open" aria-hidden="true"></span>
+								{{ editbuttonname }}
+							</button>
+						</div>
+					</div>
 				</div>
-			</div>
-			<div class="row">
-				<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-					<button type="submit" class="btn btn-primary">
-						<span class="glyphicon glyphicon-open" aria-hidden="true"></span>
-						{% block editbuttonname %}{% endblock %}
-					</button>
-				</div>
-			</div>
-		</form>
+				{% endblock %}
+			</form>
+		</div>
 	</div>
 {% endblock %}

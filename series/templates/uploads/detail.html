@@ -4,38 +4,32 @@
 {% block site_title %}{{ upload }} - Detail{% endblock %}
 {% block title %}{{ upload }}{% endblock %}
 
+{% block alert %}
+	{% if not user.is_authenticated  and upload.login_only %}
+	<div class="alert alert-info" role="alert">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		<p>Please <a href="{% url 'auth_login' %}?next={{request.path}}" class="alert-link">login</a> to download.</p>
+	</div>
+	{% endif %}
+{% endblock %}
+
 {% block content %}
-<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+	{% include 'uploads/detail_labels.html' %}
 	<div class="row">
-		<div class="row">
-			<div class="h4">
-				<span class="label label-primary label-spaced">{{ upload.date }}</span>
-				<span class="label label-primary label-spaced">{{ upload.author }}</span>
-				<span class="label label-primary label-spaced"><a href="{% url 'series:user_detail' upload.uploader %}">{{ upload.uploader }}</a></span>
-				<span class="label label-primary label-spaced">{{ upload.get_content_type_display }}</span>
-				<span class="label label-primary label-spaced">SIZE</span>
-				<span class="label label-primary label-spaced">Type</span>
-				<span class="label label-default label-spaced">{{ upload.downloads }} Downloads</span>
-				<span class="label label-default label-spaced">LOGIN ONLY/PUBLIC</span>
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="hidden-lg hidden-md hidden-sm">
+				<a class="btn btn-danger {% if not user.is_authenticated %}disabled{% endif %} btn-block" role="button" href="{% url 'series:upload_delete' upload.id %}">
+					<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+					Delete
+				</a>
+				<a class="btn btn-success {% if not user.is_authenticated %}disabled{% endif %} btn-block" role="button" href="{% url 'series:upload_file' upload.id %}">
+					<span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+					Download
+				</a>
 			</div>
-		</div>
-		<div class="row"><br/></div>
-		<div class="row">
-			<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-				<h4>Series:</h4>
-				<p><a href="{% url 'series:meta_detail' upload.meta.pk %}">{{ upload.meta }}</a></p>
-			</div>
-			<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-				<h4>Author:</h4>
-				<p>{{ upload.author }}</p>
-			</div>
-			<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
-				<h4>Uploader:</h4>
-				<p>{{ upload.uploader }}</p>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+			<div class="hidden-xs">
 				<a class="btn btn-danger {% if not user.is_authenticated %}disabled{% endif %}" role="button" href="{% url 'series:upload_delete' upload.id %}">
 					<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
 					Delete
@@ -47,5 +41,48 @@
 			</div>
 		</div>
 	</div>
-</div>
+	<div class="row"><br/></div>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingUploadInfo">
+					<h2 class="panel-title">
+						<a class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseUploadInfo" aria-expanded="true" aria-controls="collapseUploadInfo">
+						Upload
+						</a>
+					</h2>
+				</div>
+				<div id="collapseUploadInfo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingUploadInfo">
+					<div class="panel-body">
+						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+							<h4>Series:</h4>
+							<p><a href="{% url 'series:meta_detail' upload.meta.pk %}">{{ upload.meta }}</a></p>
+						</div>
+						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+							<h4>Author:</h4>
+							<p>{{ upload.author }}</p>
+						</div>
+						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+							<h4>Uploader:</h4>
+							<p><a href="{% url 'series:user_detail' upload.uploader %}">{{ upload.uploader }}</a></p>
+						</div>
+						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+							<h4>Uploader date:</h4>
+							<p>{{ upload.date }}</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="page-header">
+				<h2 id="similar">Similar</h2>
+			</div>
+			{% for result in more_like_this %}
+				{{ result.rendered|safe }}
+			{% endfor %}
+		</div>
+	</div>
 {% endblock %}

@@ -1,14 +1,19 @@
 <div class="row">
-	<div class="h4">
-		{% if object.is_staff %}
-		<div class="row">
-			<div class="h4">
-				<span class="label label-warning label-spaced">
-					<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
-					Admin
-				</span>
-			</div>
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+		<div class="h4">
+			{% if not object.is_active %}
+				<span class="label label-danger label-spaced"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Deleted</span>
+			{% endif %}
+			{% if object.is_active or user.is_superuser %}
+				{% if object.is_superuser %}
+					<a href="{% url 'series:search' %}?q=Admin"><span class="label label-warning label-spaced"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Admin</span></a>
+				{% endif %}
+				{% if object.userprofile.degree %}
+					<a href="{% url 'series:search' %}?q={{ object.userprofile.degree|urlencode }}"><span class="label label-primary label-spaced"><span class="glyphicon glyphicon-education" aria-hidden="true"></span> {{ object.userprofile.degree }}</span></a>
+				{% endif %}
+				<span class="label label-default label-spaced"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span> {{ comment_list.count }} Comments</span>
+				<span class="label label-default label-spaced"><span class="glyphicon glyphicon-open" aria-hidden="true"></span> {{ upload_list.count }} Uploads</span>
+			{% endif %}
 		</div>
-		{% endif %}
 	</div>
 </div>

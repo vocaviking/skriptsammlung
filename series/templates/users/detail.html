@@ -5,7 +5,7 @@
 	{% if object.is_active %}
 		{% if object.userprofile.show_realname or user.is_superuser %}
 			{% if object.get_full_name != '' %}
-				{{ object.get_full_name }}
+				{{ object.userprofile.title }} {{ object.get_full_name }}
 			{% else %}
 				{{ object.username }}
 			{% endif %}
@@ -17,43 +17,55 @@
 	{% endif %}
 {% endblock %}
 
-{% block content %}
+{% block alert %}
+	{% if not user.is_authenticated %}
+	<div class="alert alert-info" role="alert">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		<p>Please <a href="{% url 'auth_login' %}?next={{request.path}}" class="alert-link">login</a> to get full access to the site.</p>
+	</div>
+	{% endif %}
+{% endblock %}
 
-	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-		{% include 'users/detail_labels.html' %}
-		<div class="row"><br/></div>
-		<div class="row">
-			<div class="col-lg-4 col-md-4 col-sm-4 col-xs-8 col-xs-offset-2">
-				<span class="thumbnail"><img src="{{ object.userprofile.get_image_url }}" alt="{{ object.get_username }}" height="150"/></span>
-			</div>
-			<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+{% block content %}
+	{% include 'users/detail_labels.html' %}
+	<div class="row">
+		<div class="col-lg-4 col-lg-offset-1 col-md-4 col-md-offset-1 col-sm-4 col-sm-offset-1 col-xs-8 col-xs-offset-2">
+			<span class="thumbnail"><img src="{{ object.userprofile.get_image_url }}" alt="{{ object.get_username }}" height="150"/></span>
+		</div>
+		<div class="col-lg-7 col-md-7 col-sm-7 col-xs-12">
 				<dl class="dl-horizontal">
+					<dt><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Username:</dt>
+					<dd>{{ object.get_username }}</dd>
 					{% if object.is_active or user.is_superuser %}
 						{% if object.userprofile.show_realname or user.is_superuser %}
 							<dt>Name:</dt>
 							<dd>{{ object.userprofile.title }} {{ object.get_full_name }}</dd>
 						{% endif %}
+						{% if object.userprofile.degree %}
+							<dt><span class="glyphicon glyphicon-education" aria-hidden="true"></span> Degree:</dt>
+							<dd>{{ object.userprofile.degree }}</dd>
+						{% endif %}
 					{% endif %}
-					<dt><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Username:</dt>
-					<dd>{{ object.get_username }}</dd>
 				</dl>
 				{% if object.is_active or user.is_superuser %}
 					<dl class="dl-horizontal">
+						{% if user.is_superuser %}
+							<dt><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Mail:</dt>
+							<dd>{{ object.email|urlize }}</dd>
+						{% endif %}
 						{% if object.userprofile.phone != '' %}
 							<dt><span class="glyphicon glyphicon-earphone" aria-hidden="true"></span> Phone:</dt>
 							<dd>{{ object.userprofile.phone }}</dd>
 						{% endif %}
-						{% if object.userprofile.show_email or user.is_superuser %}
-							<dt><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Mail:</dt>
-							<dd>{{ object.email }}</dd>
-						{% endif %}
 						{% if object.userprofile.website != '' %}
 							<dt><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> Website:</dt>
-							<dd>{{ object.userprofile.website }}</dd>
+							<dd>{{ object.userprofile.website|urlize }}</dd>
 						{% endif %}
 					</dl>
 					<dl class="dl-horizontal">
-						{% if object.userprofile.show_birthday or user.is_superuser%}
+						{% if object.userprofile.show_birthday or user.is_superuser %}
 							<dt><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> Birthday:</dt>
 							<dd>
 								{% if object.userprofile.show_age or user.is_superuser%}
@@ -64,7 +76,7 @@
 							</dd>
 							{# has birthday today? #}
 						{% endif %}
-						{% if object.userprofile.show_age or user.is_superuser%}
+						{% if object.userprofile.show_age or user.is_superuser %}
 							<dt>Age:</dt>
 							<dd>{{ object.userprofile.get_age }}</dd>
 						{% endif %}
@@ -72,10 +84,8 @@
 					<dl class="dl-horizontal">
 						<dt><span class="glyphicon glyphicon-comment" aria-hidden="true"></span> Comments:</dt>
 						<dd>{{ comment_list.count }}</dd>
-						<dt><span class="glyphicon glyphicon-time" aria-hidden="true"></span> Member since:</dt>
-						<dd>{{ object.date_joined|date:"d. F Y" }}</dd>
-						<dt><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> Last login:</dt>
-						<dd>{{ object.last_login }}{% if user.is_superuser %} @ {{ object.userprofile.last_ip }} {% endif %}</dd>
+						<dt><span class="glyphicon glyphicon-open" aria-hidden="true"></span> Uploads:</dt>
+						<dd>{{ upload_list.count }}</dd>
 					</dl>
 					{% if user.is_superuser %}
 						<dl class="dl-horizontal">
@@ -84,48 +94,62 @@
 						</dl>
 					{% endif %}
 				{% endif %}
-			</div>
 		</div>
-		{% if object.is_active or user.is_superuser %}
-			{% if object.userprofile.about_me != '' %}
-				<div class="row">
-					<h2>About Me:</h2>
-					<div class="col-lg-12">
-						<p>{{ object.userprofile.about_me }}</p>
+	</div>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			{% if object.is_active or user.is_superuser %}
+				{% if object.userprofile.about_me != '' %}
+					<div class="panel panel-default">
+						<div class="panel-heading" role="tab" id="headingAboutMe">
+							<h2 class="panel-title">
+								<a class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseAboutMe" aria-expanded="true" aria-controls="collapseAboutMe">
+								About Me
+								</a>
+							</h2>
+						</div>
+						<div id="collapseAboutMe" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingAboutMe">
+							<div class="panel-body">
+								{{ object.userprofile.about_me|linebreaks }}
+							</div>
+						</div>
+					</div>
+				{% endif %}
+			{% endif %}
+			{% if upload_list %}
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingUploads">
+						<h2 class="panel-title">
+							<a class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseUploads" aria-expanded="true" aria-controls="collapseUploads">
+							Uploads
+							</a>
+						</h2>
+					</div>
+					<div id="collapseUploads" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingUploads">
+						<div class="panel-body">
+							{% include 'users/upload_detail.html' %}
+						</div>
 					</div>
 				</div>
 			{% endif %}
-		{% endif %}
-		<div class="panel panel-default">
-			<div class="panel-heading" role="tab" id="headingZero">
-				<h2 class="panel-title">
-					<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseZero" aria-expanded="true" aria-controls="collapseZero">
-					Uploads
-					</a>
-				</h2>
-			</div>
-			<div id="collapseZero" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingZero">
-				<div class="panel-body">
-					{% include 'metas/upload_detail.html' %}
+			{% if comment_list %}
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingComments">
+						<h2 class="panel-title">
+							<a class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseComments" aria-expanded="true" aria-controls="collapseComments">
+							Comments
+							</a>
+						</h2>
+					</div>
+					<div id="collapseComments" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingComments">
+						<div class="panel-body">
+							{% for comment in comment_list %}
+								{% include 'metas/discussion_comment.html' %}
+							{% endfor %}
+						</div>
+					</div>
 				</div>
-			</div>
-		</div>
-		<div class="panel panel-default">
-			<div class="panel-heading" role="tab" id="headingBla">
-				<h2 class="panel-title">
-					<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseBla" aria-expanded="true" aria-controls="collapseBla">
-					Comments
-					</a>
-				</h2>
-			</div>
-			<div id="collapseBla" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingBla">
-				<div class="panel-body">
-					{% for comment in comment_list %}
-						{% include 'metas/discussion_comment.html' %}
-					{% endfor %}
-				</div>
-			</div>
+			{% endif %}
 		</div>
 	</div>
-
 {% endblock %}

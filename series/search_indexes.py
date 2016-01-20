@@ -4,12 +4,10 @@
 #====================================================================================
 #                                  Include stuff
 #====================================================================================
-from haystack                   import indexes
-from django.utils               import timezone
-from django.contrib.auth        import get_user_model
-User = get_user_model()
-from .models                    import Upload, UserProfile, Meta
 from django_comments.models import Comment
+from django.utils           import timezone
+from haystack               import indexes
+from .models                import Upload, UserProfile, Meta
 #====================================================================================
 #                                    Actual Code
 #====================================================================================
@@ -18,42 +16,16 @@ from django_comments.models import Comment
 #------------------------------------------------------------------------------------
 class CommentIndex(indexes.SearchIndex, indexes.Indexable):
     #Content
-    text              = indexes.CharField(document=True, use_template=True)
-
+    text       = indexes.CharField(document=True, use_template=True)
+    #Filter    
+    date       = indexes.DateField(model_attr='submit_date')
+    user       = indexes.CharField(model_attr='user__get_username')
+    comment_pk = indexes.IntegerField(model_attr='pk')
+    #Pre-Rendering
+    rendered   = indexes.CharField(use_template=True,indexed=False)
+    #Functions
     def get_model(self):
         return Comment
-    def index_queryset(self, using=None):
-        return self.get_model().objects.all()
-
-#------------------------------------------------------------------------------------
-#                                     Meta Index
-#------------------------------------------------------------------------------------
-class MetaIndex(indexes.SearchIndex, indexes.Indexable):
-    #Content
-    text              = indexes.CharField(document=True, use_template=True)
-    
-    #Filter
-    meta_name         = indexes.CharField(model_attr='name')
-    meta_description  = indexes.CharField(model_attr='description')
-    meta_keywords     = indexes.CharField(model_attr='keywords')
-    meta_lecture      = indexes.CharField(model_attr='lecture')
-    #people
-    #TODOTODOTODOTODOTODO
-    meta_year         = indexes.IntegerField(model_attr='year')
-    meta_semester     = indexes.IntegerField(model_attr='semester')
-    meta_programme    = indexes.CharField(model_attr='programme')
-    meta_area         = indexes.CharField(model_attr='area')
-    
-    #Autocomplete
-    meta_name_auto       = indexes.EdgeNgramField(model_attr='name')
-    meta_keywords_auto   = indexes.EdgeNgramField(model_attr='keywords')
-    meta_lecture_auto    = indexes.EdgeNgramField(model_attr='lecture')
-    meta_lecturer_auto   = indexes.EdgeNgramField(model_attr='lecturer')
-    meta_programme_auto  = indexes.EdgeNgramField(model_attr='programme')
-    meta_area_auto       = indexes.EdgeNgramField(model_attr='area')
-
-    def get_model(self):
-        return Meta
     def index_queryset(self, using=None):
         return self.get_model().objects.all()
 #------------------------------------------------------------------------------------
@@ -61,11 +33,23 @@ class MetaIndex(indexes.SearchIndex, indexes.Indexable):
 #------------------------------------------------------------------------------------     
 class UploadIndex(indexes.SearchIndex, indexes.Indexable):
     #Content
-    text        = indexes.CharField(document=True, use_template=True)
-    
-    #Autocomplete
-    upload_author_auto = indexes.EdgeNgramField(model_attr='author')
-##    upload_name_auto   = indexes.EdgeNgramField(model_attr='')
+    text                = indexes.CharField(document=True, use_template=True)
+    #Filter
+    date                = indexes.DateField(model_attr='date')
+    user                = indexes.CharField(model_attr='uploader__get_username')
+    meta_pk             = indexes.IntegerField(model_attr='meta__pk')
+    #Autocomplete Upload
+    upload_author_auto  = indexes.EdgeNgramField(model_attr='author')
+    #Autocomplete Meta
+    meta_name_auto      = indexes.EdgeNgramField(model_attr='meta__name')
+    meta_keywords_auto  = indexes.EdgeNgramField(model_attr='meta__keywords')
+    meta_lecture_auto   = indexes.EdgeNgramField(model_attr='meta__lecture')
+    meta_lecturer_auto  = indexes.EdgeNgramField(model_attr='meta__lecturer')
+    meta_programme_auto = indexes.EdgeNgramField(model_attr='meta__programme')
+    meta_area_auto      = indexes.EdgeNgramField(model_attr='meta__area')
+    #Pre-Rendering
+    rendered            = indexes.CharField(use_template=True,indexed=False)
+    #Functions
     def get_model(self):
         return Upload
     def index_queryset(self, using=None):
@@ -73,16 +57,23 @@ class UploadIndex(indexes.SearchIndex, indexes.Indexable):
 #------------------------------------------------------------------------------------
 #                                   User Index
 #------------------------------------------------------------------------------------
-class UserIndex(indexes.SearchIndex, indexes.Indexable):
+class UserProfileIndex(indexes.SearchIndex, indexes.Indexable):
+    #Content
     text               = indexes.CharField(document=True, use_template=True)
-    user_username_auto = indexes.EdgeNgramField(model_attr='get_username')
-    #username    = indexes.CharField(    model_attr='username')
-    #first_name  = indexes.CharField(    model_attr='first_name')
-    #last_name   = indexes.CharField(    model_attr='last_name')
-    is_staff           = indexes.BooleanField( model_attr='is_staff')
-    #Profile informatioon
+    #Filter
+    date               = indexes.DateField(model_attr='get_birth_date')
+    user               = indexes.CharField(model_attr='user__get_username')
+    user_pk            = indexes.IntegerField(model_attr='user__pk')
+    #Autocomplete
+    user_username_auto = indexes.EdgeNgramField(model_attr='user__get_username')
+    user_fullname_auto = indexes.EdgeNgramField(model_attr='user__get_full_name')
+    user_degree_auto   = indexes.EdgeNgramField(model_attr='degree')
+    user_title_auto    = indexes.EdgeNgramField(model_attr='title')
+    #Pre-Rendering
+    rendered           = indexes.CharField(use_template=True,indexed=False)
+    #Functions
     def get_model(self):
-        return User
+        return UserProfile
     def index_queryset(self, using=None):
         "Used when the entire index for model is updated."
         return self.get_model().objects.all()

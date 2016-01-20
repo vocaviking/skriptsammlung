@@ -5,11 +5,11 @@
 #                                  Include stuff
 #====================================================================================
 from django.contrib             import admin
-from django.contrib.auth.admin  import UserAdmin
 from django.contrib.auth        import get_user_model
 User = get_user_model()
+from django.contrib.auth.admin  import UserAdmin
+from reversion.admin            import VersionAdmin
 from .models                    import Upload, Meta, UserProfile
-from reversion.admin import VersionAdmin
 #====================================================================================
 #                                    Actual Code
 #====================================================================================
@@ -18,7 +18,7 @@ from reversion.admin import VersionAdmin
 #------------------------------------------------------------------------------------
 class UploadBaseAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None,               {'fields':['file','date','uploader','ip']                       }),
+        (None,               {'fields':['file','date','uploader']                            }),
         ('File Meta',        {'fields':['meta'],                       'classes':['collapse']}),
         ('File Information', {'fields':['author','content_type'],      'classes':['collapse']}),
         ('Security',         {'fields':['login_only'],                 'classes':['collapse']}),
@@ -28,7 +28,6 @@ class UploadBaseAdmin(admin.ModelAdmin):
 class UploadAdmin(VersionAdmin, UploadBaseAdmin):
     pass
 admin.site.register(Upload, UploadAdmin)
-
 #------------------------------------------------------------------------------------
 #                                      Meta
 #------------------------------------------------------------------------------------

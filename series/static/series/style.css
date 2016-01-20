@@ -1,20 +1,31 @@
+/* Panel Collapsing */
+.panel-heading .accordion-toggle:after {
+    /* symbol for "opening" panels */
+    font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
+    content: "\e114";    
+    float: right;        
+    color: grey;
+}
+.panel-heading .accordion-toggle.collapsed:after {
+    /* symbol for "collapsed" panels */
+    content: "\e079";
+}
+/* Logo */
 .sb-page-header {
-	background: #2f2f2f url("https://www.fsr.uni-jena.de/templates/redevoaphelion/images/headerbg_bl.jpg") no-repeat scroll left bottom;
+	background: #2f2f2f url("headerbg_bl.jpg") no-repeat scroll left bottom;
 	color: #FFFFFF;
 	margin-bottom: 1em;
 }
+/* Footer */
 .footer {
 	background-color: #f5f5f5;
 	border-top: 1px solid #e5e5e5;
 }
-.label-spaced {
-    margin-right:  0.3em;
-    margin-bottom: 0.5em !important;
-	display: inline-block;
-}
+/* Carousel on Main Page */
 .carousel, .carousel .item {
 	height: 35em;
 }
+/* Search Form Model Field */
 #id_models {
 	list-style-type: none;
 }
@@ -23,25 +34,15 @@
 	display: inline-block;
 	margin-right: 2em;
 }
-#id_honeypot {
-    display: none;
+/* Search Form Results */
+.search_result {
+	margin-top: 0;
 }
-/*
-#slogan {
-	position: absolute;
-	margin: 2em;
-	bottom: 0;
-	right: 0;
-}*/
+/* Logo */
 #logo {
 	height: 3em;
 }
-
-span.label>a {
-	color: white;
-}
-
-
+/* Discussions */
 .commentcrumb {
   list-style: none;
   padding: 0;
@@ -58,5 +59,17 @@ span.label>a {
 }
 .commentcrumb > .active {
   color: #777;
+}
+#id_honeypot {
+    display: none;
+}
+/* Series Detail Labels */
+span.label>a {
+	color: white;
+}
+.label-spaced {
+    margin-right:  0.3em;
+    margin-bottom: 0.5em !important;
+	display: inline-block;
 }
 

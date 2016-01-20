@@ -1,22 +1,52 @@
 {% extends "base.html" %}
 
-{% block title %}Delete &quot;{{ meta.name }}&quot;?{% endblock %}
+{% block title %}Delete <em>{{ meta.name }}</em>?{% endblock %}
 {% block site_title %}Delete - {{ meta.name }}{% endblock %}
-{% block sidebar %}{% endblock %}
+
+{% block alert %}
+	{% if form.errors %}
+	<div class="alert alert-danger" role="alert">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		<p>Error while submitting the form. Please check your input, and try again.</p>
+	</div>
+	{% endif %}
+{% endblock %}
+
 {% block content %}
-	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-		<form action="{% url 'series:meta_delete' meta.id %}" method="POST">
-			<p>The series, all its upload, as well as all its comments will be deleted, a recovery is not possible.</p>
-			<p>Are you sure you want to delete &quot;{{ meta.name }}&quot;?</p>
-			{% include 'webpage/generic_form_fields.html' %}
-			<button class="btn btn-danger" type="submit" value="delete">
-				<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
-				Delete
-			</button>
-			<a href="{% url 'series:meta_detail' meta.id %}" class="btn btn-default" type="submit">
-				<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-				Cancel
-			</a>
-		</form>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<form action="{% url 'series:meta_delete' meta.id %}" method="POST">
+				<p>The series, all its upload, as well as all its comments will be deleted, a recovery is not possible.</p>
+				<p>Are you sure you want to delete <strong>{{ meta.name }}</strong>?</p>
+				{% include 'webpage/generic_form_fields.html' %}
+				<div class="row"><br/></div>
+				<div class="row">
+					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div class="hidden-lg hidden-md hidden-sm">
+							<button class="btn btn-danger btn-block" type="submit" value="delete">
+								<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+								Delete
+							</button>
+							<a href="{% url 'series:meta_detail' meta.id %}" class="btn btn-default btn-block" type="submit">
+								<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+								Cancel
+							</a>
+						</div>
+						<div class="hidden-xs">
+							<button class="btn btn-danger" type="submit" value="delete">
+								<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+								Delete
+							</button>
+							<a href="{% url 'series:meta_detail' meta.id %}" class="btn btn-default" type="submit">
+								<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+								Cancel
+							</a>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
 	</div>
 {% endblock %}

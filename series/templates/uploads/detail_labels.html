@@ -1,0 +1,17 @@
+<div class="row">
+	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+		<div class="h4">
+			{% if upload.login_only %}
+				<a href="{% url 'series:search' %}?q=Restricted"><span class="label label-danger label-spaced"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> Restricted</span></a>
+			{% else %}
+				<a href="{% url 'series:search' %}?q=Public"><span class="label label-success label-spaced"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> Public</span></a>
+			{% endif %}
+			<a href="{% url 'series:search' %}?q={{ upload.author|urlencode }}"><span class="label label-primary label-spaced"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{ upload.author }}</span></a>
+			<a href="{% url 'series:search' %}?q={{ upload.uploader|urlencode }}"><span class="label label-primary label-spaced"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{ upload.uploader }}</span></a>
+			<a href="{% url 'series:search' %}?q={{ upload.get_content_type_display|urlencode }}"><span class="label label-primary label-spaced"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> {{ upload.get_content_type_display }}</span></a>
+			<span class="label label-default label-spaced"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> {{ upload.get_filesize }}</span>
+			<span class="label label-default label-spaced"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> {{ upload.get_filetype }}</span>
+			<span class="label label-default label-spaced"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span> {{ upload.downloads }} Downloads</span>
+		</div>
+	</div>
+</div>

@@ -4,10 +4,10 @@
 #====================================================================================
 #                                  Include stuff
 #====================================================================================
-from pdfminer.pdfinterp import PDFResourceManager, process_pdf
+import io
 from pdfminer.converter import TextConverter
 from pdfminer.layout    import LAParams
-import io
+from pdfminer.pdfinterp import PDFResourceManager, process_pdf
 #====================================================================================
 #                                    Actual Code
 #====================================================================================
@@ -20,6 +20,7 @@ def pdf2txt(infp):
     Takes a file objects, and returns a string stream object.
     Implementation is based on the pdfminer3k package.
     '''
+    infp.open()
     #Settings
     caching = True #If set to False, it reduces memory consumption, but also slows down the processing
     #Open Output Stream

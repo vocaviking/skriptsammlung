@@ -4,39 +4,118 @@
 #====================================================================================
 #                                  Include stuff
 #====================================================================================
-from django.contrib.auth            import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth            import get_user_model
-User = get_user_model()
-from django.core.urlresolvers       import reverse
-from django.http                    import HttpResponse, HttpResponseRedirect, HttpResponseServerError
-from django.shortcuts               import get_object_or_404, render, redirect
-from django.utils                   import timezone
-from django.utils.decorators        import method_decorator
-from django.views.generic.detail    import DetailView
-from django.views.generic.edit      import UpdateView, CreateView, DeleteView, FormView
-from django.forms                   import FileField, CharField
-from .models                        import UserProfile, Upload, Meta
-from nocaptcha_recaptcha.fields     import NoReCaptchaField
-from haystack.query                 import SearchQuerySet
-from collections                    import Counter
-from django                         import forms
-from registration.backends.default.views import RegistrationView
 import mimetypes, json
-from django.forms.models import modelformset_factory
-from django_comments.models import Comment, ContentType
+from bootstrap3_datetime.widgets         import DateTimePicker
+from collections                         import Counter
+from django                              import forms
+from django.contrib.auth                 import authenticate, login, logout, get_user_model
+User = get_user_model()                  
+from django.contrib.auth.decorators      import login_required
+from django.core.urlresolvers            import reverse
+from django.http                         import HttpResponse, HttpResponseRedirect, HttpResponseServerError
+from django.shortcuts                    import get_object_or_404, render, redirect
+from django.utils                        import timezone
+from django.utils.decorators             import method_decorator
+from django.views.generic.detail         import DetailView
+from django.views.generic.edit           import UpdateView, CreateView, DeleteView, FormView
+from django_comments.models              import Comment, ContentType
+from haystack.generic_views              import SearchView
+from haystack.forms                      import ModelSearchForm
+from haystack.query                      import SearchQuerySet
+from nocaptcha_recaptcha.fields          import NoReCaptchaField
+from registration.backends.default.views import RegistrationView
+from .models                             import UserProfile, Upload, Meta
+from .registration_form                  import RegistrationFormUniqueEmail
 #====================================================================================
 #                                    Actual Code
 #====================================================================================
 #------------------------------------------------------------------------------------
+#                                    Search Forms
+#------------------------------------------------------------------------------------
+class search_form(ModelSearchForm):
+    user       = forms.CharField(required=False)
+    start_date = forms.DateField(required=False,widget=DateTimePicker(options={'format':'DD. MMM YYYY','pickTime': False}),input_formats = ['%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y', '%d. %b %Y', '%b %d %Y', '%b %d, %Y', '%d %b %Y', '%d %b, %Y', '%B %d %Y', '%B %d, %Y', '%d %B %Y', '%d %B, %Y'])
+    end_date   = forms.DateField(required=False,widget=DateTimePicker(options={'format':'DD. MMM YYYY','pickTime': False}),input_formats = ['%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y', '%d. %b %Y', '%b %d %Y', '%b %d, %Y', '%d %b %Y', '%d %b, %Y', '%B %d %Y', '%B %d, %Y', '%d %B %Y', '%d %B, %Y'])
+
+    def search(self):
+        #First, store the SearchQuerySet received from other processing.
+        sqs = super(search_form, self).search()
+
+        if not self.is_valid():
+            return self.no_query_found()
+        #If we have advanced options, but not query, do a database wide search
+        if ( not self.cleaned_data['q']      ) and \
+             ( self.cleaned_data['user']        or \
+               self.cleaned_data['start_date']  or \
+               self.cleaned_data['start_date'] ):
+            sqs = SearchQuerySet().all()
+        elif not self.cleaned_data['q']:
+            return self.no_query_found()
+        #Check to see if a user was chosen.
+        if self.cleaned_data['user']:
+            sqs = sqs.filter(user__contains=self.cleaned_data['user'])
+        #Check to see if a start_date was chosen.
+        if self.cleaned_data['start_date']:
+            sqs = sqs.filter(date__gte=self.cleaned_data['start_date'])
+        #Check to see if an end_date was chosen.
+        if self.cleaned_data['end_date']:
+            sqs = sqs.filter(date__lte=self.cleaned_data['end_date'])
+        
+        #Cleaning up Results (Get rid of doubles mainly)
+        sqs2 = []
+        if not self.cleaned_data['models'] or 'series.userprofile' in self.cleaned_data['models']:
+            users = Counter()
+            for each in sqs.models(UserProfile).values_list('user_pk'):
+                if each[0] is not None:
+                    users[each[0]] += 1
+            for each in users:
+                sqs2.append(sqs.models(UserProfile).filter(user_pk=each).latest('date'))
+        if not self.cleaned_data['models'] or 'django_comments.comment' in self.cleaned_data['models']:
+            comments = Counter()
+            for each in sqs.models(Comment).values_list('comment_pk'):
+                if each[0] is not None:
+                    comments[each[0]] += 1
+            for each in comments:
+                sqs2.append(sqs.models(Comment).filter(comment_pk=each).latest('date'))
+        if not self.cleaned_data['models'] or 'series.upload' in self.cleaned_data['models']:
+            metas = Counter()
+            for each in sqs.models(Upload).values_list('meta_pk'):
+                if each[0] is not None:
+                    metas[each[0]] += 1
+            for each in metas:
+                sqs2.append(sqs.models(Upload).filter(meta_pk=each).latest('date'))
+        return sqs2
+class search_view(SearchView):
+    form_class = search_form
+    template_name = 'search/search.html'
+    def get_context_data(self, *args, **kwargs):
+        context = super(search_view, self).get_context_data(*args, **kwargs)
+        #Check if we have advanced option, and open the form container if we do
+        if self.request.GET.get('user','')       != '' or \
+           self.request.GET.get('start_date','') != '' or \
+           self.request.GET.get('end_date','')   != '':
+            context['advanced'] = True
+        else:
+            context['advanced'] = False
+        return context
+#------------------------------------------------------------------------------------
 #                                    General Site
 #------------------------------------------------------------------------------------
 def index(request):
-    return render(request, 'webpage/index.html')
+    context = {
+                   'user_num'    : User.objects.all().count(),
+                   'upload_num'  : Upload.objects.all().count(),
+                   'meta_num'    : Meta.objects.all().count(),
+                   'comment_num' : Comment.objects.all().count(),
+              }
+    return render(request, 'webpage/index.html', context)
 def about(request):
     return render(request, 'webpage/about.html')
 def contact(request):
     return render(request, 'webpage/contact.html')
+#------------------------------------------------------------------------------------
+#                                     Overviews
+#------------------------------------------------------------------------------------
 def semester_overview(request):
     semester_list  = [ entry['semester']  for entry in Meta.objects.all().values('semester').order_by('-semester').distinct()]
     programme_list = [ entry['programme'] for entry in Meta.objects.all().values('programme').order_by('-programme').distinct()]
@@ -50,6 +129,19 @@ def semester_overview(request):
                 grid[semester][programme] = lecture_list
     context = {'grid':grid}
     return render(request, 'overview/semester.html', context)
+def people_overview(request):
+    year_list      = [ entry['year']      for entry in Meta.objects.all().values('year').order_by('-year').distinct()]
+    programme_list = [ entry['programme'] for entry in Meta.objects.all().values('programme').order_by('-programme').distinct()]
+    grid = {}
+    for year in year_list:
+        grid[year]  = {}
+    for year in year_list:
+        for programme in programme_list:
+            lecturer_list = [ entry['lecturer'] for entry in Meta.objects.filter(year=year).filter(programme=programme).values('lecturer').order_by('-lecturer').distinct()]
+            if len(lecturer_list)>0:
+                grid[year][programme] = lecturer_list
+    context = {'grid':grid}
+    return render(request, 'overview/people.html', context)
 #------------------------------------------------------------------------------------
 #                                      Series
 #------------------------------------------------------------------------------------
@@ -59,6 +151,10 @@ def semester_overview(request):
 class upload_detail(DetailView):
     model         = Upload
     template_name = 'uploads/detail.html'
+    def get_context_data(self, **kwargs):
+        context = super(upload_detail, self).get_context_data(**kwargs)
+        context['more_like_this']  = SearchQuerySet().more_like_this(self.get_object()).models(Upload)[:5]
+        return context
 class meta_detail(DetailView):
     model         = Meta
     template_name = 'metas/detail.html'
@@ -96,12 +192,9 @@ class meta_edit(UpdateView):
         form = super(meta_edit, self).get_form(form_class)
         form.fields['captcha'] = NoReCaptchaField(help_text   = 'Commencing Turing-Test...')
         return form
-
 #....................................................................................
 #                                   Create View
 #....................................................................................
-from django.forms.models import modelform_factory
-
 class meta_create(CreateView):
     model         = Meta
     template_name = 'metas/create.html'
@@ -123,10 +216,9 @@ class meta_create(CreateView):
     def get_form(self, form_class):
         form = super(meta_create, self).get_form(form_class)
         form.fields['captcha'] = NoReCaptchaField(help_text   = 'Commencing Turing-Test...')
-        upload_form = modelform_factory(Upload,fields=('file','author','content_type'))
+        upload_form = forms.models.modelform_factory(Upload,fields=('file','author','content_type'))
         for field in upload_form.base_fields:
             form.fields[field] = upload_form.base_fields[field]
-
         return form
     def form_valid(self, form):
         response            = super(meta_create, self).form_valid(form)
@@ -140,10 +232,9 @@ class meta_create(CreateView):
         upload.login_only   = True
         upload.author       = form.cleaned_data['author']
         upload.content_type = form.cleaned_data['content_type']
+        upload.file_content_extract()
         upload.save()
-
         return response
-
 class upload_create(CreateView):
     model         = Upload
     template_name = 'uploads/create.html'
@@ -180,8 +271,8 @@ class upload_create(CreateView):
         upload.uploader     = self.request.user
         upload.ip           = self.request.META['REMOTE_ADDR']
         upload.login_only   = True
+        upload.file_content_extract()
         upload.save()
-
         return response
 #....................................................................................
 #                                    Delete View
@@ -189,7 +280,7 @@ class upload_create(CreateView):
 class meta_delete(DeleteView):
     model = Meta
     template_name = 'metas/delete.html'
-
+	
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(meta_delete, self).dispatch(*args, **kwargs)
@@ -239,17 +330,12 @@ def upload_file(request, pk):
         upload.downloads += 1
         upload.save()
     return response
-#....................................................................................
-#                                    Connect View
-#....................................................................................
-
 #------------------------------------------------------------------------------------
 #                                       User
 #------------------------------------------------------------------------------------
 #....................................................................................
 #                                   Detail View
 #....................................................................................
-from django_comments.models import Comment
 class user_detail(DetailView):
     model               = User
     context_object_name = 'object'
@@ -267,12 +353,12 @@ class user_detail(DetailView):
 class user_edit(UpdateView):
     model         = UserProfile
     fields        = [ 'title',
+                      'degree',
                       'about_me',
                       'image',
                       'website',
                       'phone',
                       'birth_date',
-                      'show_email', 
                       'show_age',     
                       'show_realname',
                       'show_birthday',
@@ -297,9 +383,11 @@ class user_edit(UpdateView):
     def get_object(self, queryset=None):
         return self.request.user.userprofile
     def get_form(self, form_class):
-        form                      = super(user_edit, self).get_form(form_class)
-        form.fields['captcha']    = NoReCaptchaField(help_text = 'Commencing Turing-Test...')
-        user_form = modelform_factory(User,fields=('email','first_name','last_name'))
+        form = super(user_edit, self).get_form(form_class)
+        form.fields['birth_date'].widget  = DateTimePicker(options={'format':'DD. MMM YYYY','pickTime': False})
+        form.fields['birth_date'].input_formats = ['%Y-%m-%d', '%m/%d/%Y', '%m/%d/%y', '%d. %b %Y', '%b %d %Y', '%b %d, %Y', '%d %b %Y', '%d %b, %Y', '%B %d %Y', '%B %d, %Y', '%d %B %Y', '%d %B, %Y']
+
+        user_form = forms.models.modelform_factory(User,fields=('first_name','last_name'))
         for field in user_form.base_fields:
             form.fields[field] = user_form.base_fields[field]
             if   field == 'email':
@@ -312,8 +400,6 @@ class user_edit(UpdateView):
 #....................................................................................
 #                                 Create/Register View
 #....................................................................................
-from series.registration_form import RegistrationFormUniqueEmail
-
 class user_register(RegistrationView):
     def form_valid(self, request, form):
         username = form.clean_email().split('@')[0]
@@ -342,26 +428,31 @@ def auto_test(q, cat, show):
     for category in cat.split():
         #Do Query
         if   category == 'lecture':
-            keys = [str(entry.object.lecture) for entry in SearchQuerySet().autocomplete(meta_lecture_auto=q)]
+            keys = [str(entry.object.meta.lecture) for entry in SearchQuerySet().autocomplete(meta_lecture_auto=q)]
         elif category == 'username':
             keys = [str(entry.object) for entry in SearchQuerySet().autocomplete(user_username_auto=q)]
+            keys.extend([str(entry.object) for entry in SearchQuerySet().autocomplete(user_fullname_auto=q)])
+        #TODO
+        elif category == 'degree':
+            keys = [str(entry.object.userprofile.degree) for entry in SearchQuerySet().autocomplete(user_degree_auto=q)]
+        #TODO
+        elif category == 'title':
+            keys = [str(entry.object.userprofile.title) for entry in SearchQuerySet().autocomplete(user_title_auto=q)]
         elif category == 'area':
-            keys = [str(entry.object.area) for entry in SearchQuerySet().autocomplete(meta_area_auto=q)]
+            keys = [str(entry.object.meta.area) for entry in SearchQuerySet().autocomplete(meta_area_auto=q)]
         elif category == 'programme':
-            keys = [str(entry.object.programme) for entry in SearchQuerySet().autocomplete(meta_programme_auto=q)]
+            keys = [str(entry.object.meta.programme) for entry in SearchQuerySet().autocomplete(meta_programme_auto=q)]
         elif category == 'metaname':
-            keys = [str(entry.object) for entry in SearchQuerySet().autocomplete(meta_name_auto=q)]
-##        elif category == 'uploadname':
-##            keys = [str(entry.object) for entry in SearchQuerySet().autocomplete(upload_name_auto=q)]
+            keys = [str(entry.object.meta) for entry in SearchQuerySet().autocomplete(meta_name_auto=q)]
         elif category == 'people':
             keys = [str(entry.object.author) for entry in SearchQuerySet().autocomplete(upload_author_auto=q)]
-            keys.extend([str(entry.object.lecturer) for entry in SearchQuerySet().autocomplete(meta_lecturer_auto=q)])
+            keys.extend([str(entry.object.meta.lecturer) for entry in SearchQuerySet().autocomplete(meta_lecturer_auto=q)])
         elif category == 'keywords':
             query = SearchQuerySet().autocomplete(meta_keywords_auto=q)
             #Extract Keywords
             keys = []
             for entry in query:
-                for keyword in entry.object.keywords_as_list():
+                for keyword in entry.object.meta.keywords_as_list():
                     if q.lower() in keyword.lower():
                         keys.append(keyword)
         else:
@@ -377,7 +468,8 @@ def auto_test(q, cat, show):
                            'lecture'    : 'Lecture',
                            'username'   : 'User',
                            'metaname'   : 'Series',
-##                           'uploadname' : 'File',
+                           'title'      : 'Title',
+                           'degree'     : 'Degree',
                            'people'     : 'People',
                            'area'       : 'Area',
                            'programme'  : 'Graduation Course',
@@ -389,12 +481,11 @@ def auto_test(q, cat, show):
             results.append(json)
     #Return Results
     return results
-
 #------------------------------------------------------------------------------------
 #                               Autocomplete Views
 #------------------------------------------------------------------------------------
 def autocomplete(request):
-    if request.is_ajax():
+    if request.is_ajax() and len(request.GET.get('q',''))>=3:
         data = json.dumps(auto_test(request.GET.get('q',''),request.GET.get('category','keywords lecture people area username metaname'),request.GET.get('show','false')))
     else:
         data = '[]'

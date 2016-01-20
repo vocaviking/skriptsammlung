@@ -23,8 +23,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '-5jb5px69h4#_l_-o9m*fl)-e44#fug67e!5a7dg1y2hgf$%5n'
 
 #Recaptcha Plugin Keys
-NORECAPTCHA_SITE_KEY   = '6LcMzAYTAAAAAM-sV5jFZFawm1Joo8Dpx4pKiUij'
-NORECAPTCHA_SECRET_KEY = '6LcMzAYTAAAAAKy0ytmJ6uWGxpakCD6pJQDZQDQJ'
+NORECAPTCHA_SITE_KEY   = '6LdifBMTAAAAAFK1YGLLjWaYapiYy5BhAg8SKdY_'
+NORECAPTCHA_SECRET_KEY = '6LdifBMTAAAAAIRaVFo4WruhxeZlRl6c1uFrVaUA'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -49,6 +49,7 @@ INSTALLED_APPS = (
     'django_comments',
     'registration',
     'django.contrib.admin',
+    'bootstrap3_datetime',
 )
 
 #Authentication Settings
@@ -58,11 +59,9 @@ INCLUDE_REGISTER_URL    = True
 INCLUDE_AUTH_URLS       = True
 LOGIN_URL               = '/users/login'
 LOGIN_REDIRECT_URL      = 'series:index'
-#LOGOUT_URL              = 'success'
 
 #Needed for the comment system
 SITE_ID = 1
-
 
 # Allowed Upload File Types
 SERIES_ALLOWED_MIMETYPES = (
@@ -77,8 +76,9 @@ SERIES_ALLOWED_MIMETYPES = (
 # Maximums File Size in byte
 SERIES_MAX_FILE_SIZE = 5242880
 
-#where to save user uploads to
-MEDIA_ROOT = 'uploads'
+#Where to save user uploads to
+MEDIA_ROOT = 'uploads/'
+MEDIA_URL  = '/uploads/'
 
 # Haystack Search Engine
 HAYSTACK_CONNECTIONS = {
@@ -121,7 +121,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'pafsite.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
@@ -132,19 +131,14 @@ DATABASES = {
     }
 }
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
 LANGUAGE_CODE = 'en-gb'
-
-TIME_ZONE = 'Europe/Berlin'
-
-USE_I18N = True
-
-USE_L10N = True
-
-USE_TZ = True
+TIME_ZONE     = 'Europe/Berlin'
+USE_I18N      = True
+USE_L10N      = True
+USE_TZ        = True
 
 
 # Static files (CSS, JavaScript, Images)

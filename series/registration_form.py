@@ -1,13 +1,11 @@
+#Registration Form Implementation
+#(using the Jena Mailadresse)
 from __future__ import unicode_literals
-
-
-from django import forms
-from django.utils.translation  import ugettext_lazy as _
-from django.contrib.auth.forms import UserCreationForm
-from nocaptcha_recaptcha.fields     import NoReCaptchaField
-
-from registration.users import UserModel, UsernameField
-
+from django                     import forms
+from django.contrib.auth.forms  import UserCreationForm
+from django.utils.translation   import ugettext_lazy as _
+from nocaptcha_recaptcha.fields import NoReCaptchaField
+from registration.users         import UserModel, UsernameField
 User = UserModel()
 
 class RegistrationForm(UserCreationForm):

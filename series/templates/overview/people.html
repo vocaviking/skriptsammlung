@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block site_title %}Speakers{% endblock %}
+{% block title %}Speakers{% endblock %}
+
+{% block content %}
+	{% for year, programme_index in grid.items %}
+		<div class="panel panel-default">
+			<div class="panel-heading" role="tab" id="heading{{ year }}">
+				<h2 class="panel-title">
+					<a class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ year }}" aria-expanded="true" aria-controls="collapse{{ year }}">
+					{{ year }}
+					</a>
+				</h2>
+			</div>
+			<div id="collapse{{ year }}" class="panel-collapse collapse in" role="tab" aria-labelledby="heading{{ year }}">
+				<div class="panel-body">
+				{% for programme, lecturer_index in programme_index.items %}
+					<h4>{{ programme }}</h4>
+					<p>
+					<ul>
+					{% for lecturer in lecturer_index %}
+						<li><a href="{% url 'series:search' %}?q={{ year|urlencode|add:' '|add:programme|add:' '|add:lecturer|urlencode }}#results">{{ lecturer }}</a></li>
+					{% endfor %}
+					</ul>
+					</p>
+				{% endfor %}
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+{% endblock %}
+
+

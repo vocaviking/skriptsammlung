@@ -1,10 +1,10 @@
-<script>
+<script type="text/javascript">
 $(function() {
 	$( "{{ autoid }}" ).catcomplete({
 		source: function(request, response) {
 			$.getJSON("{% url autourl %}", { q:request.term, {% if autocategory %}category:"{{ autocategory }}"{% endif %} {% if autoshow %}show:"true"{% endif %}}, response)
 		},
-		minLength: 2,
+		minLength: 3,
 		delay: 0,
 	});
 });

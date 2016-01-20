@@ -1,0 +1,3 @@
+{% with comment=object %}
+	{% include 'search/indexes/django_comments/discussion_comment.html' %}
+{% endwith %}

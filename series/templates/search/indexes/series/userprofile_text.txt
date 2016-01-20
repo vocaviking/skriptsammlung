@@ -1,0 +1,10 @@
+{{ object.user.get_username }}
+{{ object.user.get_full_name }}
+{{ object.title }}
+{{ object.degree }}
+{{ object.about_me }}
+{{ object.website }}
+{{ object.phone }}
+{% if object.user.is_superuser %}
+Admin
+{% endif %}

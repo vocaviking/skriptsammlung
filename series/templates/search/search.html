@@ -1,68 +1,107 @@
 {% extends "base.html" %}
 
+{% block javascript %}
+	{{ block.super }}
+	{% include "search/autocomplete_function.html" with autourl='series:autocomplete' autoid='#id_q' autoshow='true' %}
+	{{ form.media }}
+{% endblock %}
+
 {% block title %}Find something!{% endblock %}
 {% block site_title %}Search{% endblock %}
 
 {% block content %}
-	<form method="get" action="{% url 'haystack_search' %}#results" class="autocomplete-me">
-		<div class="panel panel-default">
-			<div class="panel-body">
-				<div class="row">
-					<div class="col-lg-12">
-						{% include 'webpage/generic_form_fields.html' %}
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<form method="get" action="{% url 'series:search' %}#results" class="autocomplete-me">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<div class="row">
+							{% load bootstrap %}
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								{{ form.q|bootstrap }}
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+								<div class="hidden-lg hidden-md hidden-sm">
+									<button type="submit" class="btn btn-primary btn-block">
+										<span class="glyphicon glyphicon-open" aria-hidden="true"></span>
+										Search
+									</button>
+								</div>
+								<div class="hidden-xs">
+									<button type="submit" class="btn btn-primary center-block">
+										<span class="glyphicon glyphicon-open" aria-hidden="true"></span>
+										Search
+									</button>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
-				<div class="row">
-					<div class="col-lg-12">
-						<button type="submit" class="center-block btn btn-primary" value="search">
-							<span class="glyphicon glyphicon-search" aria-hidden="true"></span> Search
-						</button>
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingAdvancedSearch">
+						<h2 class="panel-title">
+							<a class="{% if not advanced %}collapsed{% endif %} accordion-toggle" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseAdvancedSearch" aria-expanded="true" aria-controls="collapseAdvancedSearch">
+							Advanced Options
+							</a>
+						</h2>
+					</div>
+					<div id="collapseAdvancedSearch" class="panel-collapse collapse {%if advanced %}in{% endif %}" role="tab" aria-labelledby="headingAdvancedSearch">
+						<div class="panel-body">
+							<div class="row">
+								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+									{{ form.user|bootstrap }}
+								</div>
+								<div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
+									{{ form.start_date|bootstrap }}
+								</div>
+								<div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
+									{{ form.end_date|bootstrap }}
+								</div>
+								<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+									{{ form.models|bootstrap }}
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
-			</div>
+				{% if query or advanced %}
+					<div class="row">
+						<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+							<div class="page-header">
+								<h2 id="results">Results</h2>
+							</div>
+							{% for result in page_obj.object_list %}
+								{{ result.rendered|safe }}
+							{% empty %}
+								<p>Nothing found.</p>
+							{% endfor %}
+						</div>
+					</div>
+					{% if page.has_previous or page.has_next %}
+						<nav>
+							<ul class="pagination">
+								{% if page.has_previous %}
+									<li>
+										<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}" aria-label="Previous">
+											<span aria-hidden="true">&laquo;</span>
+										</a>
+									</li>
+								{% endif %}
+								<li><a href="#">{{ page.number }} of {{ page.paginator.num_pages }}.</a></li>
+								{% if page.has_next %}
+									<li>
+										<a href="?q={{ query }}&amp;page={{ page.next_page_number }}" aria-label="Next">
+											<span aria-hidden="true">&raquo;</span>
+										</a>
+									</li>
+								{% endif %}
+							</ul>
+						</nav>
+					{% endif %}
+				{% endif %}
+			</form>
 		</div>
-		{% if query %}
-			<div class="row">
-				<div class="col-lg-12">
-					<h2 id="results">Results</h2>
-					{% for result in page.object_list %}
-						{% if result.content_type == 'series.upload' %}
-							{% include 'search/results/upload.html' with object=result.object %}
-						{% elif result.content_type == 'series.meta'%}
-							{% include 'search/results/meta.html' with object=result.object %}
-						{% elif result.content_type == 'django_comments.comment'%}
-							{% include 'search/results/comment.html' with comment=result.object %}
-						{% elif result.content_type == 'auth.user'%}
-							{% include 'search/results/user.html' with object=result.object %}
-						{% else %}
-							<p>Error! Contenttype: {{ result.content_type }} not implemented!</p>
-						{% endif %}
-					{% empty %}
-						<p>Nothing found.</p>
-					{% endfor %}
-				</div>
-			</div>
-			{% if page.has_previous or page.has_next %}
-				<nav>
-					<ul class="pagination">
-						{% if page.has_previous %}
-							<li>
-								<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}" aria-label="Previous">
-									<span aria-hidden="true">&laquo;</span>
-								</a>
-							</li>
-						{% endif %}
-						<li><a href="#">{{ page.number }} of {{ page.paginator.num_pages }}.</a></li>
-						{% if page.has_next %}
-							<li>
-								<a href="?q={{ query }}&amp;page={{ page.next_page_number }}" aria-label="Next">
-									<span aria-hidden="true">&raquo;</span>
-								</a>
-							</li>
-						{% endif %}
-					</ul>
-				</nav>
-			{% endif %}
-		{% endif %}
-	</form>
+	</div>
 {% endblock %}

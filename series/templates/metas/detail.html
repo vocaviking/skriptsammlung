@@ -7,127 +7,131 @@
 {% block alert %}
 	{% if not user.is_authenticated %}
 	<div class="alert alert-info" role="alert">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
 		<p>Please <a href="{% url 'auth_login' %}?next={{request.path}}" class="alert-link">login</a> to download and edit files, or leave a comment.</p>
 	</div>
 	{% endif %}
 {% endblock %}
 
 {% block content %}
-	<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-		{% include 'metas/detail_labels.html' %}
-		<div class="row"><br/></div>
-		{% include 'metas/detail_bar.html' %}
-		<div class="row"><br/></div>
-		<div class="row">
-			<div class="panel-group">
-				<div class="panel panel-default">
-					<div class="panel-heading" role="tab" id="headingZero">
-						<h2 class="panel-title">
-							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseZero" aria-expanded="true" aria-controls="collapseZero">
-							Uploads
-							</a>
-						</h2>
-					</div>
-					<div id="collapseZero" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingZero">
-						<div class="panel-body">
-							{% include 'metas/upload_detail.html' %}
-						</div>
+	{% include 'metas/detail_labels.html' %}
+	{% include 'metas/detail_bar.html' %}
+	<div class="row"><br/></div>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingUploads">
+					<h2 class="panel-title">
+						<a class="collapsed accordion-toggle" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseUploads" aria-expanded="true" aria-controls="collapseUploads">
+						Uploads
+						</a>
+					</h2>
+				</div>
+				<div id="collapseUploads" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingUploads">
+					<div class="panel-body">
+						{% include 'metas/upload_detail.html' %}
 					</div>
 				</div>
+			</div>
+			{% if not meta.description == '' %}
 				<div class="panel panel-default">
-					<div class="panel-heading" role="tab" id="headingOne">
+					<div class="panel-heading" role="tab" id="headingDescription">
 						<h2 class="panel-title">
-							<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+							<a class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseDescription" aria-expanded="true" aria-controls="collapseDescription">
 							Description
 							</a>
 						</h2>
 					</div>
-					<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+					<div id="collapseDescription" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingDescription">
 						<div class="panel-body">
 							<p>{{ meta.description }}</p>
 						</div>
 					</div>
 				</div>
+			{% endif %}
+			{% if not meta.keywords == '' %}
 				<div class="panel panel-default">
-					<div class="panel-heading" role="tab" id="headingTwo">
+					<div class="panel-heading" role="tab" id="headingKeywords">
 						<h2 class="panel-title">
-							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+							<a class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseKeywords" aria-expanded="false" aria-controls="collapseKeywords">
 							Keywords
 							</a>
 						</h2>
 					</div>
-					<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+					<div id="collapseKeywords" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingKeywords">
 						<div class="panel-body">
 							<p>{{ meta.keywords }}</p>
 						</div>
 					</div>
 				</div>
-				<div class="panel panel-default">
-					<div class="panel-heading" role="tab" id="headingThree">
-						<h2 class="panel-title">
-							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-							Lecture Information
-							</a>
-						</h2>
-					</div>
-					<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
-						<div class="panel-body">
-							<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-								<h4>Lecture:</h4>
-								<p>{{ meta.lecture }}</p>
-							</div>
-							<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-								<h4>Speaker:</h4>
-								<p>{{ meta.lecturer }}</p>
-							</div>
-							<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-								<h4>Area:</h4>
-								<p>{{ meta.area }}</p>
-							</div>
-							<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-								<h4>Year:</h4>
-								<p>{{ meta.year }}</p>
-							</div>
+			{% endif %}
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingLectureInfo">
+					<h2 class="panel-title">
+						<a class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseLectureInfo" aria-expanded="false" aria-controls="collapseLectureInfo">
+						Lecture Information
+						</a>
+					</h2>
+				</div>
+				<div id="collapseLectureInfo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingLectureInfo">
+					<div class="panel-body">
+						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+							<h4>Lecture:</h4>
+							<p>{{ meta.lecture }}</p>
+						</div>
+						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+							<h4>Speaker:</h4>
+							<p>{{ meta.lecturer }}</p>
+						</div>
+						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+							<h4>Area:</h4>
+							<p>{{ meta.area }}</p>
+						</div>
+						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+							<h4>Year:</h4>
+							<p>{{ meta.year }}</p>
 						</div>
 					</div>
 				</div>
-				<div class="panel panel-default">
-					<div class="panel-heading" role="tab" id="headingFour">
-						<h2 class="panel-title">
-							<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-							Programme Information
-							</a>
-						</h2>
-					</div>
-					<div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
-						<div class="panel-body">
-							<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-								<h4>Graduation Course:</h4>
-								<p>{{ meta.programme }}</p>
-							</div>
-							<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-								<h4>Semester:</h4>
-								<p>{{ meta.semester }}</p>
-							</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading" role="tab" id="headingProgrammeInfo">
+					<h2 class="panel-title">
+						<a class="accordion-toggle" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseProgrammeInfo" aria-expanded="false" aria-controls="collapseProgrammeInfo">
+						Programme Information
+						</a>
+					</h2>
+				</div>
+				<div id="collapseProgrammeInfo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingProgrammeInfo">
+					<div class="panel-body">
+						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+							<h4>Graduation Course:</h4>
+							<p>{{ meta.programme }}</p>
+						</div>
+						<div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+							<h4>Semester:</h4>
+							<p>{{ meta.semester }}</p>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		{% include 'metas/discussion.html' %}
+	</div>
+	{% include 'metas/discussion.html' %}
+	<div class="hidden-xs">
 		<div class="row"><br/></div>
 		{% include 'metas/detail_bar.html' %}
-		<div class="row">
-			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-				<div class="row">
-					<h2>Similar</h2>
-					<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-						{% for entry in more_like_this %}
-						{% include 'search/results/meta.html' with object=entry.object %}
-					{% endfor %}
-					</div>
-				</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="page-header">
+				<h2 id="similar">Similar</h2>
 			</div>
+			{% for result in more_like_this %}
+				{{ result.rendered|safe }}
+			{% endfor %}
 		</div>
 	</div>
 {% endblock %}
