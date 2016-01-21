@@ -1,4 +1,4 @@
-{{ object.file }}
+{{ object }}
 {{ object.author }}
 {{ object.get_content_type_display }}
 {{ object.content }}
@@ -11,7 +11,7 @@
 {{ object.meta.lecturer }}
 {{ object.meta.programme }}
 {{ object.meta.area }}
-{{ object.meta.get_semester_display }}
+{{ object.meta.semester }}. Semester
 {{ object.meta.year }}
 {% if object.login_only %}
 	Restricted
