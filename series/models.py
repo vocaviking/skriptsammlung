@@ -101,11 +101,8 @@ class Upload(models.Model):
         content = re.sub('[\s]+',' ',content)
         #Save Extract
         self.content = content
-#    def save(self, *args, **kwargs):
-#        self.file_content_extract()
-#        super(Upload, self).save(*args, **kwargs)
     def __str__(self):
-        return str(os.path.split(self.file.file.name)[1])
+        return str(os.path.split(self.file.path)[1])
     def get_filetype(self):
         return os.path.splitext(self.file.path)[1][1:].upper()
     def get_filesize(self):
