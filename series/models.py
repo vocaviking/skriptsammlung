@@ -29,6 +29,11 @@ class Upload(models.Model):
                                     verbose_name = 'File Selection',
                                     help_text    = 'Only PDF, TXT, and TEX files smaller than 5MB.',
                                     )
+    #Original Filename
+    filename = models.CharField(max_length = 250,
+                                default  = '',
+                                editable = False,
+                                )
     #Upload date
     date         = models.DateTimeField(verbose_name = 'Upload Date',
                                         default      = timezone.now,
@@ -102,7 +107,7 @@ class Upload(models.Model):
         #Save Extract
         self.content = content
     def __str__(self):
-        return str(os.path.split(self.file.path)[1])
+        return self.filename
     def get_filetype(self):
         return os.path.splitext(self.file.path)[1][1:].upper()
     def get_filesize(self):

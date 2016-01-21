@@ -226,6 +226,7 @@ class meta_create(CreateView):
         upload              = Upload()
         upload.meta         = meta
         upload.file         = self.request.FILES['file']
+        upload.filename     = self.request.FILES['file'].name
         upload.date         = timezone.now()
         upload.uploader     = self.request.user
         upload.ip           = self.request.META['REMOTE_ADDR']
