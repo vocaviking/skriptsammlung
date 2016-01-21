@@ -165,7 +165,7 @@ class meta_detail(DetailView):
         context['upload_uploader'] = [ User.objects.get(pk=upload['uploader']) for upload in Upload.objects.filter(meta=self.get_object()).order_by('uploader').values('uploader').distinct()]
         context['upload_list']     = Upload.objects.filter(meta=self.get_object()).order_by('-date')
         context['comment']         = Comment.objects.filter(content_type = ContentType.objects.get_for_model(Meta))
-        context['more_like_this']  = SearchQuerySet().more_like_this(self.get_object()).models(Meta)[:5]
+        context['more_like_this']  = SearchQuerySet().more_like_this(self.get_object()).models(Upload)[:5]
         return context
 #....................................................................................
 #                                   Edit View
