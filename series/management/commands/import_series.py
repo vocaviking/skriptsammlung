@@ -21,7 +21,7 @@ class Command(BaseCommand):
         upload              = Upload()
         upload.meta         = meta
         upload.file         = file
-        upload.filename     = file.name
+        upload.filename     = os.path.split(file.name)[1]
         upload.date         = timezone.now()
         upload.uploader     = user
         upload.login_only   = options['login_only']
